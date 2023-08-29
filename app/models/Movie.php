@@ -1,5 +1,7 @@
 <?php
-class Movie extends \Illuminate\Database\Eloquent\Model
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+class Movie extends Model
 {
-
+    protected $primaryKey = 'flight_id';
 }
