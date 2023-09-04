@@ -40,3 +40,49 @@ composer test
 ```
 
 That's it! Now go build something cool.
+
+
+
+//routes
+```bash
+GET /v1/movies - get list of all existing movies
+POST /v1/movies - add new movie to collection
+PUT /v1/movies/{id} - updates movie by {id}
+DELETE /v1/movies/{id} - deletes movie by {id}
+PATCH /v1/movies/{id} - updates particular data of movie by {id}
+GET /v1/movies/{numberPerPage} - get list of {numberPerPage} existing movies
+GET /v1/movies/{numberPerPage}/sort/{fieldToSort} - get list of {numberPerPage} existing movies sorted by {fieldToSort}
+
+
+```
+
+
+//model
+```json
+{
+ "uid": "1",
+ "title": "Die Hard",
+ "year": "1988",
+ "released": "20 Jul 1988",
+ "runtime": "132 min",
+ "genre": "Action, Thriller",
+ "director": "John McTiernan",
+ "actors": "Bruce Willis, Alan Rickman, Bonnie Bedelia",
+ "country": "United States",
+ "poster": "https://m.media-amazon.com/images/M/MV5BZjRlNDUxZjAtOGQ4OC00OTNlLTgxNmQtYTBmMDgwZmNmNjkxXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg",
+ "imdb": "8.2",
+ "type": "movie"
+}
+
+```
+
+
+
+``` JSON
+//JSON schema of response for (b - e):
+{
+ "status": "200/400/404/500",
+ "message": "some kind of informative message bla bla bla…"
+}
+
+```

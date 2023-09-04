@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
+use App\Application\Controllers\Movie\MovieConroller;
+use App\Utils\SeedMovies;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
@@ -20,8 +20,47 @@ return function (App $app) {
         return $response;
     });
 
-    $app->group('/users', function (Group $group) {
-        $group->get('', ListUsersAction::class);
-        $group->get('/{id}', ViewUserAction::class);
+    
+    $app->get('/v1/movies', function (Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+        $sth = $db->prepare("SELECT * FROM movies");
+        $sth->execute();
+        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $payload = json_encode($data);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    $app->get('/seed', function (Request $request, Response $response) {
+        $seeder = new SeedMovies();
+        $seed_data = $seeder->seed();        $db = $this->get(PDO::class);
+        $db = $this->get(PDO::class);
+
+        foreach ($seed_data as $movie) {
+            $sql = "INSERT INTO movies (uid, title, year, released, runtime, overview, genre, director, actors, country, poster, imdb_id, imdb, type) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->execute([
+                $movie->uid,
+                $movie->title,
+                $movie->year,
+                $movie->released,
+                $movie->runtime,
+                $movie->overview,
+                $movie->genre,
+                $movie->director,
+                $movie->actors,
+                $movie->country,
+                $movie->poster,
+                $movie->imdb_id,
+                $movie->imdb,
+                $movie->type
+            ]);
+        }
+;
+
+        
+        return $response->withHeader('Content-Type', 'application/json');
     });
 };
