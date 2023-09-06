@@ -24,6 +24,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "ext-json": "*",
+        "doctrine/annotations": "^2.0",
         "guzzlehttp/guzzle": "^7.8",
         "illuminate/database": "^10.21",
         "illuminate/events": "^10.21",
@@ -31,7 +32,8 @@
         "php-di/php-di": "^6.4",
         "slim/psr7": "^1.6",
         "slim/slim": "^4.12",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "zircote/swagger-php": "^4.7"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
