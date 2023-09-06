@@ -31,6 +31,16 @@ return function (App $app) {
         return $response->withHeader('Content-Type', 'application/json');
     });
 
+    $app->post('/v1/movies', function (Request $request, Response $response) {
+        $db = $this->get(PDO::class);
+        $sth = $db->prepare("SELECT * FROM movies");
+        $sth->execute();
+        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $payload = json_encode($data);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
     $app->get('/seed', function (Request $request, Response $response) {
         $seeder = new SeedMovies();
         $seed_data = $seeder->seed();        $db = $this->get(PDO::class);
