@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Application\Controllers\Movie\MovieConroller;
+use App\Application\Controllers\Movie\MovieController;
 use App\Utils\SeedMovies;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -16,7 +16,9 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
  *     version="0.1"
  * )
  */
-return function (App $app) {
+
+$movieController = new MovieController;
+return function (App $app) use ($movieController){
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
@@ -33,129 +35,9 @@ return function (App $app) {
      *     @OA\Response(response="200", description="An example resource")
      * )
      */
-    $app->get('/v1/movies', function (Request $request, Response $response) {
-        $db = $this->get(PDO::class);
-        $sth = $db->prepare("SELECT * FROM movies");
-        $sth->execute();
-        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-        $payload = json_encode($data);
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json');
-    });
-
-    $app->get('/v1/movies/{uid}', function (Request $request, Response $response, array $args) {
-        $db = $this->get(PDO::class);
-        $uid = $args['uid'];
-        $sth = $db->prepare("SELECT * FROM movies WHERE uid = :uid");
-        $sth->bindParam(':uid', $uid);
-        $sth->execute();
-        $data = $sth->fetch(PDO::FETCH_ASSOC);
-
-        if (!$data) {
-            $response->getBody()->write(json_encode(['message' => 'Movie not found']));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-        }
-
-        $payload = json_encode($data);
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type', 'application/json');
-    });
-
-    $app->post('/v1/movies', function (Request $request, Response $response) {
-        $db = $this->get(PDO::class);
-
-        $postData = $request->getParsedBody();
-        $validatedData = validateAndSanitizeMovieData($postData);
-        if (!$validatedData) {
-            $response->getBody()->write(json_encode(['message' => 'Invalid input data']));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-        $sth = $db->prepare("INSERT INTO movies (uid, title, year, released, runtime, genre, director, actors, country, poster, imdb, type, created_at, updated_at, overview, imdb_id) 
-                             VALUES (:uid, :title, :year, :released, :runtime, :genre, :director, :actors, :country, :poster, :imdb, :type, NOW(), NOW(), :overview, :imdb_id)");
-
-        $sth->bindParam(':uid', $validatedData['uid']);
-        $sth->bindParam(':title', $validatedData['title']);
-        $sth->bindParam(':year', $validatedData['year']);
-        $sth->bindParam(':released', $validatedData['released']);
-        $sth->bindParam(':runtime', $validatedData['runtime']);
-        $sth->bindParam(':genre', $validatedData['genre']);
-        $sth->bindParam(':director', $validatedData['director']);
-        $sth->bindParam(':actors', $validatedData['actors']);
-        $sth->bindParam(':country', $validatedData['country']);
-        $sth->bindParam(':poster', $validatedData['poster']);
-        $sth->bindParam(':imdb', $validatedData['imdb']);
-        $sth->bindParam(':type', $validatedData['type']);
-        $sth->bindParam(':overview', $validatedData['overview']);
-        $sth->bindParam(':imdb_id', $validatedData['imdb_id']);
-
-        $result = $sth->execute();
-
-        if ($result) {
-            $response->getBody()->write(json_encode(['message' => 'Movie added successfully']));
-            return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
-        } else {
-            $response->getBody()->write(json_encode(['message' => 'Failed to add movie']));
-            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
-        }
-    });
-
-    $app->put('/v1/movies/{id}', function (Request $request, Response $response, $args) {
-        $id = $args['id'];
-        $db = $this->get(PDO::class);
-
-        // Retrieve and validate the updated movie data from the request body
-        $putData = $request->getParsedBody();
-        $validatedData = validateAndSanitizeMovieData($putData);
-
-        if (!$validatedData) {
-            $response->getBody()->write(json_encode(['message' => 'Invalid input data']));
-            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-        }
-
-        // Check if the movie with the provided ID exists in the database
-        $existingMovie = getMovieById($db, $id);
-
-        if (!$existingMovie) {
-            $response->getBody()->write(json_encode(['message' => 'Movie not found']));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-        }
-
-        // Update the movie data in the database
-        $sth = $db->prepare("UPDATE movies 
-                             SET uid = :uid, title = :title, year = :year, released = :released, 
-                                 runtime = :runtime, genre = :genre, director = :director, 
-                                 actors = :actors, country = :country, poster = :poster, 
-                                 imdb = :imdb, type = :type, updated_at = NOW(), overview = :overview, 
-                                 imdb_id = :imdb_id
-                             WHERE id = :id");
-
-        $sth->bindParam(':id', $id);
-        $sth->bindParam(':uid', $validatedData['uid']);
-        $sth->bindParam(':title', $validatedData['title']);
-        $sth->bindParam(':year', $validatedData['year']);
-        $sth->bindParam(':released', $validatedData['released']);
-        $sth->bindParam(':runtime', $validatedData['runtime']);
-        $sth->bindParam(':genre', $validatedData['genre']);
-        $sth->bindParam(':director', $validatedData['director']);
-        $sth->bindParam(':actors', $validatedData['actors']);
-        $sth->bindParam(':country', $validatedData['country']);
-        $sth->bindParam(':poster', $validatedData['poster']);
-        $sth->bindParam(':imdb', $validatedData['imdb']);
-        $sth->bindParam(':type', $validatedData['type']);
-        $sth->bindParam(':overview', $validatedData['overview']);
-        $sth->bindParam(':imdb_id', $validatedData['imdb_id']);
-
-        $result = $sth->execute();
-
-        if ($result) {
-            $response->getBody()->write(json_encode(['message' => 'Movie updated successfully']));
-            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } else {
-            $response->getBody()->write(json_encode(['message' => 'Failed to update movie']));
-            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
-        }
-    });
-
+    $app->get('/v1/movies', $movieController->index());
+    $app->post('/v1/movies',$movieController->create());
+    $app->put('/v1/movies/{id}',$movieController->update);
     $app->delete('/v1/movies/{id}', function (Request $request, Response $response, $args) {
         $id = $args['id'];
         // Implement logic to delete a movie from the database based on the provided $id
