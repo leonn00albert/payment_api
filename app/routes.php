@@ -48,15 +48,13 @@ return function (App $app) use ($movieController, $docsController){
 
     $app->get('/v1/movies/{numberPerPage}', function (Request $request, Response $response, $args) {
         $numberPerPage = $args['numberPerPage'];
-        // Implement logic to return a paginated list of movies based on $numberPerPage
-        // Don't forget to handle errors
+
     });
 
     $app->get('/v1/movies/{numberPerPage}/sort/{fieldToSort}', function (Request $request, Response $response, $args) {
         $numberPerPage = $args['numberPerPage'];
         $fieldToSort = $args['fieldToSort'];
-        // Implement logic to return a paginated list of movies sorted by $fieldToSort
-        // Don't forget to handle errors
+
     });
     $app->get('/seed', function (Request $request, Response $response) {
         $seeder = new SeedMovies();

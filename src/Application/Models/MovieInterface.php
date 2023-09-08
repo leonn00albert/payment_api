@@ -25,7 +25,7 @@ interface MovieInterface
      * @param int $id The UID of the movie to find.
      * @return array An array of movie records matching the UID.
      */
-    public static function findByUid(PDO $db, int $id): array;
+    public static function findByUid(PDO $db, int $uid): ?array;
 
     /**
      * Find a movie by its ID.

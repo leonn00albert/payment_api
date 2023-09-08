@@ -25,16 +25,19 @@ class Movie implements MovieInterface
         $data = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $data;
     } 
-    public static function findByUid(PDO $db, int $id):array
+    public static function findByUid(PDO $db, int $uid): ?array
     {
-        $sth = $db->prepare("SELECT * FROM movies WHERE uid = :id LIMIT 1");
+        $sth = $db->prepare("SELECT * FROM movies WHERE uid = :uid LIMIT 1");
+        $sth->bindParam(':uid', $uid, PDO::PARAM_STR);
         $sth->execute();
-        $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-        return $data;
-    } 
+        $data = $sth->fetch(PDO::FETCH_ASSOC);
+    
+        return $data ? $data : null;
+    }
     public static function findById(PDO $db, int $id):array
     {
         $sth = $db->prepare("SELECT * FROM movies WHERE id = :id LIMIT 1");
+        $sth->bindParam(':id', $id);
         $sth->execute();
         $data = $sth->fetch(PDO::FETCH_ASSOC);
         return $data;

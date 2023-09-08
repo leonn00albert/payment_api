@@ -105,7 +105,7 @@ class MovieController
         return function (Request $req, Response $res, array $args): Response {
             try {
                 $uid = $args['uid'];
-                $data = Movie::findByUid($this->get(PDO::class), $uid);
+                $data = Movie::findByUid($this->get(PDO::class), (int) $uid);
 
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
