@@ -1,0 +1,148 @@
+"components": {
+    "schemas": {
+        "Movie": {
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "The unique identifier for the movie."
+                },
+                "uid": {
+                    "type": "string",
+                    "description": "A UID for the movie."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "The title of the movie."
+                },
+                "year": {
+                    "type": "string",
+                    "description": "The year the movie was released."
+                },
+                "released": {
+                    "type": "string",
+                    "description": "The release date of the movie."
+                },
+                "runtime": {
+                    "type": "string",
+                    "description": "The duration of the movie in minutes."
+                },
+                "genre": {
+                    "type": "string",
+                    "description": "The genre of the movie."
+                },
+                "director": {
+                    "type": "string",
+                    "description": "The director of the movie."
+                },
+                "actors": {
+                    "type": "string",
+                    "description": "The actors in the movie."
+                },
+                "country": {
+                    "type": "string",
+                    "description": "The country where the movie was produced."
+                },
+                "poster": {
+                    "type": "string",
+                    "description": "The URL to the movie's poster image."
+                },
+                "imdb": {
+                    "type": "string",
+                    "description": "The IMDb rating of the movie."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "The type of content (e.g., 'movie')."
+                },
+                "created_at": {
+                    "type": "string",
+                    "description": "The date and time when the movie record was created."
+                },
+                "updated_at": {
+                    "type": "string",
+                    "description": "The date and time when the movie record was last updated."
+                },
+                "overview": {
+                    "type": "string",
+                    "description": "A brief overview or summary of the movie's plot."
+                },
+                "imdb_id": {
+                    "type": "string",
+                    "description": "The IMDb ID of the movie."
+                }
+            }
+        },
+        "MovieInput": {
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "The unique identifier for the movie."
+                },
+                "uid": {
+                    "type": "string",
+                    "description": "A UID for the movie."
+                },
+                "title": {
+                    "type": "string",
+                    "description": "The title of the movie."
+                },
+                "year": {
+                    "type": "string",
+                    "description": "The year the movie was released."
+                },
+                "released": {
+                    "type": "string",
+                    "description": "The release date of the movie."
+                },
+                "runtime": {
+                    "type": "string",
+                    "description": "The duration of the movie in minutes."
+                },
+                "genre": {
+                    "type": "string",
+                    "description": "The genre of the movie."
+                },
+                "director": {
+                    "type": "string",
+                    "description": "The director of the movie."
+                },
+                "actors": {
+                    "type": "string",
+                    "description": "The actors in the movie."
+                },
+                "country": {
+                    "type": "string",
+                    "description": "The country where the movie was produced."
+                },
+                "poster": {
+                    "type": "string",
+                    "description": "The URL to the movie's poster image."
+                },
+                "imdb": {
+                    "type": "string",
+                    "description": "The IMDb rating of the movie."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "The type of content (e.g., 'movie')."
+                },
+                "created_at": {
+                    "type": "string",
+                    "description": "The date and time when the movie record was created."
+                },
+                "updated_at": {
+                    "type": "string",
+                    "description": "The date and time when the movie record was last updated."
+                },
+                "overview": {
+                    "type": "string",
+                    "description": "A brief overview or summary of the movie's plot."
+                },
+                "imdb_id": {
+                    "type": "string",
+                    "description": "The IMDb ID of the movie."
+                }
+            }
+        }
+    }
+},

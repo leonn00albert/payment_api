@@ -4,6 +4,7 @@ namespace App\Application\Models;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use PDO;
+use PDOException;
 use App\Application\Models\MovieInterface;
 class Movie implements MovieInterface
 {
@@ -26,8 +27,7 @@ class Movie implements MovieInterface
     } 
     public static function findByUid(PDO $db, int $id):array
     {
-        $sth = $db->prepare("SELECT * FROM movies WHERE uid = :id");
-
+        $sth = $db->prepare("SELECT * FROM movies WHERE uid = :id LIMIT 1");
         $sth->execute();
         $data = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $data;
@@ -63,8 +63,6 @@ class Movie implements MovieInterface
     } 
 
     public static function updateById(PDO $db, int $id, array $validatedData):bool{
-        $id = $args['id'];
-        $db = $this->get(PDO::class);
         $sth = $db->prepare("UPDATE movies 
                              SET uid = :uid, title = :title, year = :year, released = :released, 
                                  runtime = :runtime, genre = :genre, director = :director, 
@@ -88,15 +86,17 @@ class Movie implements MovieInterface
         $sth->bindParam(':type', $validatedData['type']);
         $sth->bindParam(':overview', $validatedData['overview']);
         $sth->bindParam(':imdb_id', $validatedData['imdb_id']);
+        return $sth->execute();
+    }
 
-        $result = $sth->execute();
-
-        if ($result) {
-            $response->getBody()->write(json_encode(['message' => 'Movie updated successfully']));
-            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } else {
-            $response->getBody()->write(json_encode(['message' => 'Failed to update movie']));
-            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    public static function deleteById(PDO $db, int $id): bool {
+        try {
+            $sth = $db->prepare("DELETE FROM movies WHERE id = :id");
+            $sth->bindParam(':id', $id, PDO::PARAM_INT);
+            $sth->execute();
+            return $sth->rowCount() > 0;
+        } catch (PDOException $e) {
+            return false;
         }
     }
 }

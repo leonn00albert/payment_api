@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Controllers\Docs\DocsController;
 use App\Application\Controllers\Movie\MovieController;
 use App\Utils\SeedMovies;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -18,7 +19,8 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
  */
 
 $movieController = new MovieController;
-return function (App $app) use ($movieController){
+$docsController = new DocsController;
+return function (App $app) use ($movieController, $docsController){
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
@@ -35,21 +37,14 @@ return function (App $app) use ($movieController){
      *     @OA\Response(response="200", description="An example resource")
      * )
      */
+    $app->get('/v1/swagger.json', $docsController->swaggerFile());
+    $app->get('/v1/docs', $docsController->index());
     $app->get('/v1/movies', $movieController->index());
+    $app->get('/v1/movie/{uid}', $movieController->read());
     $app->post('/v1/movies',$movieController->create());
-    $app->put('/v1/movies/{id}',$movieController->update);
-    $app->delete('/v1/movies/{id}', function (Request $request, Response $response, $args) {
-        $id = $args['id'];
-        // Implement logic to delete a movie from the database based on the provided $id
-        // Don't forget to handle errors
-    });
-
-    $app->patch('/v1/movies/{id}', function (Request $request, Response $response, $args) {
-        $id = $args['id'];
-        // Implement logic to update specific fields of an existing movie based on the provided $id
-        // You can access PATCH data using $request->getParsedBody()
-        // Don't forget to validate input data and handle errors
-    });
+    $app->put('/v1/movies/{id}',$movieController->update());
+    $app->patch('/v1/movies/{id}',$movieController->patch());
+    $app->delete('/v1/movies/{id}',$movieController->delete());
 
     $app->get('/v1/movies/{numberPerPage}', function (Request $request, Response $response, $args) {
         $numberPerPage = $args['numberPerPage'];
