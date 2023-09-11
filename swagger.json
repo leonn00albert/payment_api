@@ -304,7 +304,6 @@
                     "Movies"
                 ],
                 "summary": "Update a movie by ID",
-                "description": "Update a movie by ID.",
                 "operationId": "d6843300f8c11246eb91594cc3fb9939",
                 "parameters": [
                     {
@@ -399,7 +398,6 @@
                     "Movies"
                 ],
                 "summary": "Delete a movie by ID",
-                "description": "Delete a movie by ID.",
                 "operationId": "45a113fcd5e867d6ea584293486ea362",
                 "parameters": [
                     {
@@ -462,14 +460,15 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "v1/movies/{id}": {
             "patch": {
                 "tags": [
                     "Movies"
                 ],
                 "summary": "Patch/update a movie by ID",
-                "description": "Patch/update a movie by ID.",
-                "operationId": "3edacbad4758c0983367dd2f0f97c5a9",
+                "operationId": "7663397598e0e5e3b1bbe70edeaf023e",
                 "parameters": [
                     {
                         "name": "id",
@@ -549,6 +548,56 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Failed to update movie"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/moviesPerPage": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Get a paginated list of movies.",
+                "operationId": "137fa292a34134035ad940676b00b32e",
+                "parameters": [
+                    {
+                        "name": "numberPerPage",
+                        "in": "query",
+                        "description": "Number of movies per page.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
                                         }
                                     },
                                     "type": "object"

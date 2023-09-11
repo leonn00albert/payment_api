@@ -34,6 +34,28 @@ class Movie implements MovieInterface
     
         return $data ? $data : null;
     }
+
+    public static function byNumberPerPage(PDO $db, int $numberPerPage): ?array
+    {
+            /** @var PDO $db */
+            $sth = $db->prepare("SELECT * FROM movies LIMIT :offset, :n");
+            $offset = 0; 
+            $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $sth->bindValue(':n', $numberPerPage, PDO::PARAM_INT);
+            $sth->execute();
+            return $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function byNumberPerPageAndSort(PDO $db, int $numberPerPage, string $sort): ?array
+    {
+        /** @var PDO $db */
+        $offset = 0; // You can change this as needed based on the current page
+        $sth = $db->prepare("SELECT * FROM movies ORDER BY $sort LIMIT :offset, :n"); 
+        $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $sth->bindParam(':n', $numberPerPage, PDO::PARAM_INT);
+        $sth->execute();
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
     public static function findById(PDO $db, int $id):array
     {
         $sth = $db->prepare("SELECT * FROM movies WHERE id = :id LIMIT 1");

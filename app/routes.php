@@ -18,9 +18,10 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
  * )
  */
 
-$movieController = new MovieController;
+
+return function (App $app) {
+    $movieController = new MovieController();
 $docsController = new DocsController;
-return function (App $app) use ($movieController, $docsController){
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
@@ -31,12 +32,7 @@ return function (App $app) use ($movieController, $docsController){
         return $response;
     });
 
-    /**
-     * @OA\Get(
-     *     path="/api/resource.json",
-     *     @OA\Response(response="200", description="An example resource")
-     * )
-     */
+
     $app->get('/v1/swagger.json', $docsController->swaggerFile());
     $app->get('/v1/docs', $docsController->index());
     $app->get('/v1/movies', $movieController->index());
@@ -45,17 +41,10 @@ return function (App $app) use ($movieController, $docsController){
     $app->put('/v1/movies/{id}',$movieController->update());
     $app->patch('/v1/movies/{id}',$movieController->patch());
     $app->delete('/v1/movies/{id}',$movieController->delete());
+    $app->get('/v1/movies/{numberPerPage}',$movieController->moviesPerPage());
+    $app->get('/v1/movies/{numberPerPage}/sort/{sort}',$movieController->moviesPerPageAndSort());
 
-    $app->get('/v1/movies/{numberPerPage}', function (Request $request, Response $response, $args) {
-        $numberPerPage = $args['numberPerPage'];
 
-    });
-
-    $app->get('/v1/movies/{numberPerPage}/sort/{fieldToSort}', function (Request $request, Response $response, $args) {
-        $numberPerPage = $args['numberPerPage'];
-        $fieldToSort = $args['fieldToSort'];
-
-    });
     $app->get('/seed', function (Request $request, Response $response) {
         $seeder = new SeedMovies();
         $seed_data = $seeder->seed();

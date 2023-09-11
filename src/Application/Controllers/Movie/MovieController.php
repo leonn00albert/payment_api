@@ -6,10 +6,52 @@ namespace App\Application\Controllers\Movie;
 
 use PDO;
 use App\Application\Models\Movie;
+use Exception;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use OpenApi\Annotations as OA;
 
+/**
+ * Enum representing fields for a movie.
+ */
+enum Field: string
+{
+    case uid = 'uid';
+    case title = 'title';
+    case year = 'year';
+    case released = 'released';
+    case runtime = 'runtime';
+    case genre = 'genre';
+    case director = 'director';
+    case actors = 'actors';
+    case country = 'country';
+    case poster = 'poster';
+    case imdb = 'imdb';
+    case type = 'type';
+    case created_at = 'created_at';
+    case updated_at = 'updated_at';
+    case overview = 'overview';
+    case imdb_id = 'imdb_id';
+    /**
+     * Check if a given value is a valid field.
+     *
+     * @param string $value The value to check.
+     * @return bool True if the value is a valid field, false otherwise.
+     */
+    public static function isValid(string $value): bool
+    {
+        return in_array($value, Field::toArray(), false);
+    }
+    /**
+     * Get an array of all valid field values.
+     *
+     * @return array An array of valid field values.
+     */
+    public static function toArray(): array
+    {
+        return  array_column(Field::cases(), 'value');
+    }
+}
 /**
  * @OA\Info(
  *   title="Based Movies Database API",
@@ -21,6 +63,12 @@ use OpenApi\Annotations as OA;
  */
 class MovieController
 {
+
+    protected PDO $db;
+
+    public function __construct(PDO $db) {
+        $this->db = $db;
+    }
 
     /**
      * Get a list of movies.
@@ -42,19 +90,22 @@ class MovieController
      *         )
      *     ),
      * )
+     * Retrieve a list of all movies.
+     *
+     * @return callable A callable function that handles the request and returns a response.
      */
     public function index(): callable
     {
         return function (Request $req, Response $res): Response {
             try {
                 /** @var PDO $db */
-                $db = $this->get(PDO::class);
-
-                $sth = $db->prepare("SELECT * FROM movies");
-                $sth->execute();
-
+    
+                $sth = $this->get($this->db ?? PDO::class)->prepare("SELECT * FROM movies");
                 $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-
+                if (!$res) {
+                    $res = new Response();
+                }
+                print_r($data);
                 $payload = json_encode($data);
 
                 $res->getBody()->write($payload);
@@ -62,7 +113,8 @@ class MovieController
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
                 // Handle exceptions here and return an appropriate error response.
-                return $res->withStatus(500)->withJson(['error' => $e->getMessage()]);
+                $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         };
     }
@@ -99,13 +151,20 @@ class MovieController
      *         )
      *     ),
      * )
+     *  * Read a movie by UID.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
      */
     public function read(): callable
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
-                $uid = $args['uid'];
-                $data = Movie::findByUid($this->get(PDO::class), (int) $uid);
+                $uid =  (int) $args['uid'];
+                $data = Movie::findByUid($this->get(PDO::class), $uid);
 
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
@@ -118,7 +177,8 @@ class MovieController
 
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
-                return $res->withStatus(500)->withJson(['error' => $e->getMessage()]);
+                $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         };
     }
@@ -163,8 +223,14 @@ class MovieController
      *         )
      *     ),
      * )
+     *  * Create a new movie.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     *
+     * @return Response The HTTP response with JSON data.
      */
-    public function create()
+    public function create(): callable
     {
         return function (Request $req, Response $res): Response {
             try {
@@ -186,18 +252,13 @@ class MovieController
                     return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
                 }
             } catch (\Throwable $e) {
-                return $res->withStatus(500)->withJson(['error' => $e->getMessage()]);
+                $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         };
     }
 
     /**
-     * Update a movie by ID.
-     *
-     * @return callable
-     *
-     * @throws \Throwable
-     *
      * @OA\Put(
      *     path="/movies/{id}",
      *     summary="Update a movie by ID",
@@ -246,8 +307,15 @@ class MovieController
      *         )
      *     ),
      * )
+     *  * Update a movie by ID using the PUT method.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
      */
-    public function update()
+    public function update(): callable
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
@@ -277,20 +345,15 @@ class MovieController
                     return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
                 }
             } catch (\Throwable $e) {
-                return $res->withStatus(500)->withJson(['error' => $e->getMessage()]);
+                $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         };
     }
 
     /**
-     * Patch/update a movie by ID.
-     *
-     * @return callable
-     *
-     * @throws \Throwable
-     *
      * @OA\Patch(
-     *     path="/movies/{id}",
+     *     path="v1/movies/{id}",
      *     summary="Patch/update a movie by ID",
      *     tags={"Movies"},
      *     @OA\Parameter(
@@ -337,8 +400,17 @@ class MovieController
      *         )
      *     ),
      * )
+     * 
+     * Update a movie by ID using the PATCH method.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
      */
-    public function patch()
+
+    public function patch(): callable
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
@@ -368,18 +440,13 @@ class MovieController
                     return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
                 }
             } catch (\Throwable $e) {
-                return $res->withStatus(500)->withJson(['error' => $e->getMessage()]);
+                $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         };
     }
 
     /**
-     * Delete a movie by ID.
-     *
-     * @return callable
-     *
-     * @throws \Throwable
-     *
      * @OA\Delete(
      *     path="/movies/{id}",
      *     summary="Delete a movie by ID",
@@ -416,8 +483,16 @@ class MovieController
      *         )
      *     ),
      * )
+     * 
+     *  * Delete a movie by ID.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
      */
-    public function delete()
+    public function delete(): callable
     {
         return (function (Request $req, Response $res, array $args): Response {
             $id = $args['id'];
@@ -428,6 +503,108 @@ class MovieController
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');
             } else {
                 $res->getBody()->write(json_encode(['message' => 'Failed to delete movie']));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
+            }
+        });
+    }
+    /**
+     * @OA\Get(
+     *     path="/moviesPerPage",
+     *     summary="Get a paginated list of movies.",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="numberPerPage",
+     *         in="query",
+     *         description="Number of movies per page.",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Successful response",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Error response",
+     *         @OA\JsonContent(type="object", @OA\Property(property="error", type="string"))
+     *     )
+     * )
+     *  * Get a paginated list of movies.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
+     */
+    public function moviesPerPage(): callable
+    {
+        return (function (Request $req, Response $res, array $args): Response {
+            try {
+                $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
+                $data = Movie::byNumberPerPage($this->get(PDO::class), (int) $numberPerPage);
+                $payload = json_encode($data);
+                $res->getBody()->write($payload);
+                return $res->withHeader('Content-Type', 'application/json');
+            } catch (\Throwable $e) {
+                $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
+            }
+        });
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/movies",
+     *     summary="Get a paginated and sorted list of movies.",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="numberPerPage",
+     *         in="query",
+     *         description="Number of movies per page.",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort",
+     *         in="query",
+     *         description="Field to sort by.",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Successful response",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Error response",
+     *         @OA\JsonContent(type="object", @OA\Property(property="error", type="string"))
+     *     )
+     * )
+     * 
+     *  * Get a paginated and sorted list of movies.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
+     */
+    public function moviesPerPageAndSort(): callable
+    {
+        return (function (Request $req, Response $res, array $args): Response {
+            try {
+                $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
+                $sortBy = Field::isValid($args['sort']) ? $args['sort'] : throw new Exception("Not a valid sort option can be only : " . json_encode(Field::toArray()));
+                $data = Movie::byNumberPerPageAndSort($this->get(PDO::class), (int) $numberPerPage, $sortBy);
+                $payload = json_encode($data);
+                $res->getBody()->write($payload);
+                return $res->withHeader('Content-Type', 'application/json');
+            } catch (\Throwable $e) {
+                $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         });
