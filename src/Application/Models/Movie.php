@@ -49,8 +49,31 @@ class Movie implements MovieInterface
     public static function byNumberPerPageAndSort(PDO $db, int $numberPerPage, string $sort): ?array
     {
         /** @var PDO $db */
-        $offset = 0; // You can change this as needed based on the current page
+        $offset = 0; 
         $sth = $db->prepare("SELECT * FROM movies ORDER BY $sort LIMIT :offset, :n"); 
+        $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $sth->bindParam(':n', $numberPerPage, PDO::PARAM_INT);
+        $sth->execute();
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public static function byNumberPerPageAndFilter(PDO $db, int $numberPerPage, string $filter): ?array
+    {
+        $offset = 0;
+        $sql = "SELECT :f FROM movies LIMIT :offset, :n";
+        $sth = $db->prepare($sql);
+        $sth->bindParam(':f', $filter, PDO::PARAM_STR);
+        $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $sth->bindParam(':n', $numberPerPage, PDO::PARAM_INT);
+        $sth->execute();
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public static function byNumberPerPageAndSearch(PDO $db, int $numberPerPage, string $search): ?array
+    {
+        $offset = 0;
+        $sort = 'column_name_to_sort_by ASC'; 
+        $sql = "SELECT * FROM movies WHERE title LIKE :search LIMIT :offset, :n";
+        $sth = $db->prepare($sql);
+        $sth->bindParam(':search', "%$search%", PDO::PARAM_STR);
         $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
         $sth->bindParam(':n', $numberPerPage, PDO::PARAM_INT);
         $sth->execute();

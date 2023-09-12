@@ -9,8 +9,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use OpenApi\Annotations as OA;
+use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-
 /**
  * @OA\Info(
  *     title="My First API",
@@ -21,7 +21,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
     
-    $movieController = new MovieController($app->getContainer()->get(PDO::class));
+    $movieController = new MovieController($app->getContainer()->get(PDO::class), $app->getContainer()->get(LoggerInterface::class));
     $docsController = new DocsController;
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
@@ -44,7 +44,8 @@ return function (App $app) {
     $app->delete('/v1/movies/{id}',$movieController->delete());
     $app->get('/v1/movies/{numberPerPage}',$movieController->moviesPerPage());
     $app->get('/v1/movies/{numberPerPage}/sort/{sort}',$movieController->moviesPerPageAndSort());
-
+    $app->get('/v1/movies/{numberPerPage}/filter/{filter}',$movieController->moviesPerPageAndFilter());
+    $app->get('/v1/movies/{numberPerPage}/search/{search}',$movieController->moviesPerPageAndSearch());
 
     $app->get('/seed', function (Request $request, Response $response) {
         $seeder = new SeedMovies();

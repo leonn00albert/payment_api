@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Movie;
+
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Models\Movie;
@@ -10,6 +11,9 @@ use App\Utils\Sanatize\MovieSanitizer;
 use OpenApi\Annotations as OA;
 use Exception;
 use PDO;
+use Psr\Log\LoggerInterface;
+
+
 
 /**
  * Enum representing fields for a movie.
@@ -65,10 +69,12 @@ class MovieController
 {
 
     protected static PDO $db;
+    protected static  $logger;
 
-    public function __construct(PDO $db)
+    public function __construct(PDO $db,  $logger)
     {
-        self::$db = $db; 
+        self::$db = $db;
+        self::$logger = $logger;
     }
 
     /**
@@ -99,6 +105,7 @@ class MovieController
     {
         return function (Request $req, Response $res): Response {
             try {
+                MovieController::$logger->info("request to /v1/movies");
                 /** @var PDO $db */
                 $data = Movie::all(MovieController::$db);
 
@@ -159,8 +166,9 @@ class MovieController
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
+                MovieController::$logger->info("request to /v1/movie/");
                 $uid =  (int) $args['uid'];
-                $data = Movie::findByUid($this->db, $uid);
+                $data = Movie::findByUid(MovieController::$db, $uid);
 
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
@@ -230,11 +238,11 @@ class MovieController
     {
         return function (Request $req, Response $res): Response {
             try {
-            
+
                 $postData = $req->getParsedBody();
 
                 $validatedData = MovieSanitizer::sanitize($postData);
-             
+
                 if (!$validatedData) {
                     $res->getBody()->write(json_encode(['message' => 'Invalid input data']));
                     return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
@@ -598,6 +606,138 @@ class MovieController
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $sortBy = Field::isValid($args['sort']) ? $args['sort'] : throw new Exception("Not a valid sort option can be only : " . json_encode(Field::toArray()));
                 $data = Movie::byNumberPerPageAndSort($this->get(PDO::class), (int) $numberPerPage, $sortBy);
+                $payload = json_encode($data);
+                $res->getBody()->write($payload);
+                return $res->withHeader('Content-Type', 'application/json');
+            } catch (\Throwable $e) {
+                $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
+            }
+        });
+    }
+
+    /**
+     * Define a route callback for fetching movies with pagination and filtering.
+     *
+     * @OA\Get(
+     *     path="/v1/movies/{numberPerPage}/filter/{filter}",
+     *     summary="Retrieve a list of movies with pagination and a filter.",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="numberPerPage",
+     *         in="path",
+     *         description="The number of items to display per page.",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="filter",
+     *         in="path",
+     *         description="The filter option to apply to the movies.",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Movie")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Resource not found"
+     *     )
+     * )
+     *  * Get a paginated and filtered list of movies.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
+     */
+    public function moviesPerPageAndFilter(): callable
+    {
+        return (function (Request $req, Response $res, array $args): Response {
+            try {
+                $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
+                $filter = Field::isValid($args['filter']) ? $args['filter'] : throw new Exception("Not a valid filter option can be only : " . json_encode(Field::toArray()));
+                $data = Movie::byNumberPerPageAndFilter($this->get(PDO::class), (int) $numberPerPage, $filter);
+                $payload = json_encode($data);
+                $res->getBody()->write($payload);
+                return $res->withHeader('Content-Type', 'application/json');
+            } catch (\Throwable $e) {
+                $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
+            }
+        });
+    }
+    /**
+
+    /**
+     * @OA\Get(
+     *     path="/movies/{numberPerPage}/search/{query}",
+     *     summary="Retrieve a list of movies with pagination and search functionality.",
+     *     tags={"Movies"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="The page number (default is 1).",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="numberPerPage",
+     *         in="path",
+     *         description="The number of items to display per page.",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="path",
+     *         description="The search term to filter movies by title.",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Movie")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Resource not found"
+     *     )
+     * )
+     *  * Get a paginated and searched list of movies.
+     *
+     * @param Request $req The HTTP request object.
+     * @param Response $res The HTTP response object.
+     * @param array $args The route arguments.
+     *
+     * @return Response The HTTP response with JSON data.
+     */
+    public function moviesPerPageAndSearch(): callable
+    {
+        return (function (Request $req, Response $res, array $args): Response {
+            try {
+                $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
+                $search = isset($args['search']) ? $args['search'] : throw new Exception("Not a valid search query");
+                $data = Movie::byNumberPerPageAndSearch(MovieController::$db, (int) $numberPerPage, $search);
                 $payload = json_encode($data);
                 $res->getBody()->write($payload);
                 return $res->withHeader('Content-Type', 'application/json');

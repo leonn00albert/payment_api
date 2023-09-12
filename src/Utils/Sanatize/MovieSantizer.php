@@ -1,11 +1,9 @@
 <?php 
 namespace App\Utils\Sanatize;
 
-
-
 class MovieSanitizer {
     
-    public static function sanitize()
+    public static function sanitize($data)
     {
         $validatedData = [];
         if (isset($data['uid'])) {
