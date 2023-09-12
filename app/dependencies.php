@@ -27,7 +27,13 @@ return function (ContainerBuilder $containerBuilder) {
             return $logger;
         },
 
-        
+        "memcache" => function (ContainerInterface $c) {
+            $settings = $c->get(SettingsInterface::class);
+            $settings =  $settings->get('memcache');
+            $memcache = new \Memcached();
+            $memcache->addServer($settings['host'], $settings['port']);
+            return $memcache;
+        },
         PDO::class => function (ContainerInterface $c) {
 
             $settings = $c->get(SettingsInterface::class);

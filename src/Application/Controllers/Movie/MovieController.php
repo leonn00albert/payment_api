@@ -105,17 +105,20 @@ class MovieController
     {
         return function (Request $req, Response $res): Response {
             try {
-                MovieController::$logger->info("request to /v1/movies");
-                /** @var PDO $db */
-                $data = Movie::all(MovieController::$db);
-
+                $memcache = $this->get('memcache');
+                $cachedData = $memcache->get('index');
+                if ($cachedData === false) {
+                    $data = Movie::all(MovieController::$db);
+                    $memcache->set('index', $data, 3600);
+                } else {
+                    $data = $cachedData;
+                }
                 $payload = json_encode($data);
-
                 $res->getBody()->write($payload);
 
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
-                // Handle exceptions here and return an appropriate error response.
+                MovieController::$logger->error("request to /v1/movies " . $e->getMessage());
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -166,9 +169,16 @@ class MovieController
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
-                MovieController::$logger->info("request to /v1/movie/");
                 $uid =  (int) $args['uid'];
-                $data = Movie::findByUid(MovieController::$db, $uid);
+
+                $memcache = $this->get('memcache');
+                $cachedData = $memcache->get($uid);
+                if ($cachedData === false) {
+                    $data = Movie::findByUid(MovieController::$db, $uid);
+                    $memcache->set($uid, $data, 3600);
+                } else {
+                    $data = $cachedData;
+                }
 
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
@@ -181,6 +191,8 @@ class MovieController
 
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to /v1/movie/{uid} " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -258,6 +270,8 @@ class MovieController
                     return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
                 }
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to POST /v1/movies " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -351,6 +365,8 @@ class MovieController
                     return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
                 }
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to PUT /v1/movies " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -446,6 +462,8 @@ class MovieController
                     return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
                 }
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to PATCH /v1/movies " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -508,6 +526,8 @@ class MovieController
                 $res->getBody()->write(json_encode(['message' => 'Movie deleted successfully']));
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');
             } else {
+                MovieController::$logger->error("request to DELETE /v1/movies ");
+
                 $res->getBody()->write(json_encode(['message' => 'Failed to delete movie']));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -549,11 +569,21 @@ class MovieController
         return (function (Request $req, Response $res, array $args): Response {
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
-                $data = Movie::byNumberPerPage($this->get(PDO::class), (int) $numberPerPage);
+
+                $memcache = $this->get('memcache');
+                $cachedData = $memcache->get("index_page" . $numberPerPage);
+                if ($cachedData === false) {
+                    $data = Movie::byNumberPerPage($this->get(PDO::class), (int) $numberPerPage);
+                    $memcache->set("index_page" . $numberPerPage, $data, 3600);
+                } else {
+                    $data = $cachedData;
+                }
                 $payload = json_encode($data);
                 $res->getBody()->write($payload);
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to  /v1/movies/# " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -605,11 +635,22 @@ class MovieController
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $sortBy = Field::isValid($args['sort']) ? $args['sort'] : throw new Exception("Not a valid sort option can be only : " . json_encode(Field::toArray()));
-                $data = Movie::byNumberPerPageAndSort($this->get(PDO::class), (int) $numberPerPage, $sortBy);
+
+                $memcache = $this->get('memcache');
+                $cachedData = $memcache->get("index_page" . $numberPerPage . "_"  . $sortBy);
+                if ($cachedData === false) {
+                    $data = Movie::byNumberPerPageAndSort($this->get(PDO::class), (int) $numberPerPage, $sortBy);
+                    $memcache->set("index_page" . $numberPerPage . "_"  . $sortBy, $data, 3600);
+                } else {
+                    $data = $cachedData;
+                }
+
                 $payload = json_encode($data);
                 $res->getBody()->write($payload);
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to  /v1/movies/#.sort " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -668,17 +709,27 @@ class MovieController
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $filter = Field::isValid($args['filter']) ? $args['filter'] : throw new Exception("Not a valid filter option can be only : " . json_encode(Field::toArray()));
-                $data = Movie::byNumberPerPageAndFilter($this->get(PDO::class), (int) $numberPerPage, $filter);
+
+                $memcache = $this->get('memcache');
+                $cachedData = $memcache->get("index_page" . $numberPerPage . "_"  . $filter);
+                if ($cachedData === false) {
+                    $data = Movie::byNumberPerPageAndFilter($this->get(PDO::class), (int) $numberPerPage, $filter);
+                    $memcache->set("index_page" . $numberPerPage . "_"  . $filter, $data, 3600);
+                } else {
+                    $data = $cachedData;
+                }
+
                 $payload = json_encode($data);
                 $res->getBody()->write($payload);
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to  /v1/movies/#/filter " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
         });
     }
-    /**
 
     /**
      * @OA\Get(
@@ -737,11 +788,22 @@ class MovieController
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $search = isset($args['search']) ? $args['search'] : throw new Exception("Not a valid search query");
+                $memcache = $this->get('memcache');
+                $cachedData = $memcache->get("index_page" . $numberPerPage . "_"  . $search);
+                if ($cachedData === false) {
+                    $data = Movie::byNumberPerPageAndFilter($this->get(PDO::class), (int) $numberPerPage, $search);
+                    $memcache->set("index_page" . $numberPerPage . "_"  . $search, $data, 3600);
+                } else {
+                    $data = $cachedData;
+                }
+
                 $data = Movie::byNumberPerPageAndSearch(MovieController::$db, (int) $numberPerPage, $search);
                 $payload = json_encode($data);
                 $res->getBody()->write($payload);
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
+                MovieController::$logger->error("request to  /v1/movies/#/search " . $e->getMessage());
+
                 $res->getBody()->write(json_encode(["error" => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }

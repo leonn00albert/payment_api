@@ -13,13 +13,17 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         SettingsInterface::class => function () {
             return new Settings([
-                'displayErrorDetails' => true, // Should be set to false in production
+                'displayErrorDetails' => true, 
                 'logError'            => false,
                 'logErrorDetails'     => false,
                 'logger' => [
                     'name' => 'slim-app',
                     'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
                     'level' => Logger::DEBUG,
+                ],
+                'memcache' => [
+                    'host' => '127.0.0.1', 
+                    'port' => 11211,        
                 ],
                 "db" => [
                     'driver' => 'mysql',
@@ -30,14 +34,10 @@ return function (ContainerBuilder $containerBuilder) {
                     'charset' => 'utf8mb4',
                     'collation' => 'utf8mb4_unicode_ci',
                     'flags' => [
-                        // Turn off persistent connections
                         PDO::ATTR_PERSISTENT => false,
-                        // Enable exceptions
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                        // Emulate prepared statements
                         PDO::ATTR_EMULATE_PREPARES => true,
-                        // Set default fetch mode to array
-                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
                     ],
                 ],
             ]);
