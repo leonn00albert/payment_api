@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Movie;
-
-use PDO;
-use App\Application\Models\Movie;
-use Exception;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use App\Application\Models\Movie;
+use App\Utils\Sanatize\MovieSanitizer;
 use OpenApi\Annotations as OA;
+use Exception;
+use PDO;
 
 /**
  * Enum representing fields for a movie.
@@ -64,10 +64,11 @@ enum Field: string
 class MovieController
 {
 
-    protected PDO $db;
+    protected static PDO $db;
 
-    public function __construct(PDO $db) {
-        $this->db = $db;
+    public function __construct(PDO $db)
+    {
+        self::$db = $db; 
     }
 
     /**
@@ -99,13 +100,8 @@ class MovieController
         return function (Request $req, Response $res): Response {
             try {
                 /** @var PDO $db */
-    
-                $sth = $this->get($this->db ?? PDO::class)->prepare("SELECT * FROM movies");
-                $data = $sth->fetchAll(PDO::FETCH_ASSOC);
-                if (!$res) {
-                    $res = new Response();
-                }
-                print_r($data);
+                $data = Movie::all(MovieController::$db);
+
                 $payload = json_encode($data);
 
                 $res->getBody()->write($payload);
@@ -164,7 +160,7 @@ class MovieController
         return function (Request $req, Response $res, array $args): Response {
             try {
                 $uid =  (int) $args['uid'];
-                $data = Movie::findByUid($this->get(PDO::class), $uid);
+                $data = Movie::findByUid($this->db, $uid);
 
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
@@ -234,15 +230,17 @@ class MovieController
     {
         return function (Request $req, Response $res): Response {
             try {
+            
                 $postData = $req->getParsedBody();
-                $validatedData = validateAndSanitizeMovieData($postData);
 
+                $validatedData = MovieSanitizer::sanitize($postData);
+             
                 if (!$validatedData) {
                     $res->getBody()->write(json_encode(['message' => 'Invalid input data']));
                     return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
 
-                $result = Movie::create($this->get(PDO::class), $validatedData);
+                $result = Movie::create($this->db, $validatedData);
 
                 if ($result) {
                     $res->getBody()->write(json_encode(['message' => 'Movie added successfully']));

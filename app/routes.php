@@ -20,8 +20,9 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 
 return function (App $app) {
-    $movieController = new MovieController();
-$docsController = new DocsController;
+    
+    $movieController = new MovieController($app->getContainer()->get(PDO::class));
+    $docsController = new DocsController;
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         // CORS Pre-Flight OPTIONS Request Handler
         return $response;
@@ -64,106 +65,3 @@ $docsController = new DocsController;
     });
 };
 
-function validateAndSanitizeMovieData($data)
-{
-    $validatedData = [];
-
-    // Validate and sanitize 'uid' (assuming it's a string)
-    if (isset($data['uid'])) {
-        $validatedData['uid'] = filter_var($data['uid'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'title' (assuming it's a required string)
-    if (isset($data['title']) && is_string($data['title'])) {
-        $validatedData['title'] = filter_var($data['title'], FILTER_SANITIZE_STRING);
-    } else {
-        return false; // Invalid title
-    }
-
-    // Validate and sanitize 'year' (assuming it's an integer)
-    if (isset($data['year'])) {
-        $year = filter_var($data['year'], FILTER_VALIDATE_INT);
-        if ($year !== false && $year >= 1900 && $year <= 2100) {
-            $validatedData['year'] = $year;
-        } else {
-            return false; // Invalid year
-        }
-    }
-
-    // Validate and sanitize 'released' (assuming it's a date in YYYY-MM-DD format)
-    if (isset($data['released'])) {
-        // You can add more specific date validation if needed
-        $validatedData['released'] = filter_var($data['released'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'runtime' (assuming it's a string)
-    if (isset($data['runtime'])) {
-        $validatedData['runtime'] = filter_var($data['runtime'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'genre' (assuming it's a string)
-    if (isset($data['genre'])) {
-        $validatedData['genre'] = filter_var($data['genre'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'director' (assuming it's a string)
-    if (isset($data['director'])) {
-        $validatedData['director'] = filter_var($data['director'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'actors' (assuming it's a string)
-    if (isset($data['actors'])) {
-        $validatedData['actors'] = filter_var($data['actors'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'country' (assuming it's a string)
-    if (isset($data['country'])) {
-        $validatedData['country'] = filter_var($data['country'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'poster' (assuming it's a string)
-    if (isset($data['poster'])) {
-        $validatedData['poster'] = filter_var($data['poster'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'imdb' (assuming it's a string or float)
-    if (isset($data['imdb'])) {
-        $validatedData['imdb'] = filter_var($data['imdb'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    }
-
-    // Validate and sanitize 'type' (assuming it's a string)
-    if (isset($data['type'])) {
-        $validatedData['type'] = filter_var($data['type'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'overview' (assuming it's a string)
-    if (isset($data['overview'])) {
-        $validatedData['overview'] = filter_var($data['overview'], FILTER_SANITIZE_STRING);
-    }
-
-    // Validate and sanitize 'imdb_id' (assuming it's a string)
-    if (isset($data['imdb_id'])) {
-        $validatedData['imdb_id'] = filter_var($data['imdb_id'], FILTER_SANITIZE_STRING);
-    }
-
-    // Add more fields as needed
-
-    // Check if all required fields are present
-    $requiredFields = ['uid', 'title', 'year', 'released', 'runtime', 'director', 'actors', 'country', 'poster', 'imdb', 'type', 'overview', 'imdb_id'];
-
-    foreach ($requiredFields as $field) {
-        if (!isset($validatedData[$field])) {
-            return false; // Missing required field
-        }
-    }
-
-    return $validatedData;
-}
-
-function getMovieById($db, $id)
-{
-    $sth = $db->prepare("SELECT * FROM movies WHERE id = :id");
-    $sth->bindParam(':id', $id);
-    $sth->execute();
-    return $sth->fetch(PDO::FETCH_ASSOC);
-}
