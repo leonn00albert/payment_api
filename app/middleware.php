@@ -13,14 +13,14 @@ return function (App $app) {
         $route = $routeContext ? $routeContext->getRoute()->getPattern() : 'Unknown Route';
         $method = $request->getMethod();
         $ip = $request->getServerParams()['REMOTE_ADDR'] ?? 'Unknown IP';
-     
+
         $response = $handler->handle($request);
         $headers = $request->getHeaders();
-foreach ($headers as $name => $values) {
-    $logger->info("Route: $route, Method: $method, IP: $ip");
-    $logger->info($name . ": " . implode(", ", $values));
-    
-}
+        foreach ($headers as $name => $values) {
+            $logger->info("Route: $route, Method: $method, IP: $ip");
+            $logger->info($name . ": " . implode(", ", $values));
+            $logger->info("Route: $route, Method: $method, IP: $ip");
+        }
 
 
         return $response;

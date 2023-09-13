@@ -16,7 +16,9 @@ class HttpErrorHandler extends SlimErrorHandler
     {
         $exception = $this->exception;
         $statusCode = 500;
-        $errorMessage = 'An internal error has occurred while processing your request.';
+        $errorMessage = $exception->getMessage();
+
+        //$errorMessage = 'An internal error has occurred while processing your request.';
 
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getCode();

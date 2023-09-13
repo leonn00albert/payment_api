@@ -250,8 +250,12 @@ class MovieController
     {
         return function (Request $req, Response $res): Response {
             try {
-
-                $postData = $req->getParsedBody();
+                $rawJson = $req->getBody()->getContents();
+                if (empty($rawJson)) {
+                    $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
+                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                }
+                $postData = json_decode($rawJson, true);
 
                 $validatedData = MovieSanitizer::sanitize($postData);
 

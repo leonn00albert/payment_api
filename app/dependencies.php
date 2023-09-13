@@ -30,7 +30,7 @@ return function (ContainerBuilder $containerBuilder) {
         "memcache" => function (ContainerInterface $c) {
             $settings = $c->get(SettingsInterface::class);
             $settings =  $settings->get('memcache');
-            $memcache = new \Memcached();
+            $memcache = new Memcached();
             $memcache->addServer($settings['host'], $settings['port']);
             return $memcache;
         },

@@ -1,8 +1,5 @@
 <?php
 namespace App\Application\Models;
-
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
 use PDO;
 use PDOException;
 use App\Application\Models\MovieInterface;

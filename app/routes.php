@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Controllers\Auth\AuthController;
 use App\Application\Controllers\Docs\DocsController;
 use App\Application\Controllers\Movie\MovieController;
 use App\Utils\SeedMovies;
@@ -11,20 +12,14 @@ use Slim\App;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-/**
- * @OA\Info(
- *     title="My First API",
- *     version="0.1"
- * )
- */
-
 
 return function (App $app) {
     
     $movieController = new MovieController($app->getContainer()->get(PDO::class), $app->getContainer()->get(LoggerInterface::class));
     $docsController = new DocsController;
+    $AuthController = new AuthController;
+
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
-        // CORS Pre-Flight OPTIONS Request Handler
         return $response;
     });
 
@@ -35,6 +30,7 @@ return function (App $app) {
 
 
     $app->get('/v1/swagger.json', $docsController->swaggerFile());
+    $app->post('/v1/register', $AuthController->register());
     $app->get('/v1/docs', $docsController->index());
     $app->get('/v1/movies', $movieController->index());
     $app->get('/v1/movie/{uid}', $movieController->read());

@@ -607,6 +607,117 @@
                     }
                 }
             }
+        },
+        "/v1/movies/{numberPerPage}/filter/{filter}": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Retrieve a list of movies with pagination and a filter.",
+                "description": "Define a route callback for fetching movies with pagination and filtering.",
+                "operationId": "2669f3b986d4bebd7deef757f23c7be6",
+                "parameters": [
+                    {
+                        "name": "numberPerPage",
+                        "in": "path",
+                        "description": "The number of items to display per page.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "filter",
+                        "in": "path",
+                        "description": "The filter option to apply to the movies.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Movie"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                }
+            }
+        },
+        "/movies/{numberPerPage}/search/{query}": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Retrieve a list of movies with pagination and search functionality.",
+                "operationId": "a4a667eb82863c1acb48845e8ef54c92",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page number (default is 1).",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "numberPerPage",
+                        "in": "path",
+                        "description": "The number of items to display per page.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "query",
+                        "in": "path",
+                        "description": "The search term to filter movies by title.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Movie"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                }
+            }
         }
     }
 }
