@@ -7,12 +7,10 @@ namespace App\Application\Controllers\Movie;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Models\Movie;
-use App\Utils\Sanatize\MovieSanitizer;
 use OpenApi\Annotations as OA;
 use Exception;
 use PDO;
 use Psr\Log\LoggerInterface;
-
 
 
 /**
@@ -105,11 +103,18 @@ class MovieController
     {
         return function (Request $req, Response $res): Response {
             try {
-                $memcache = $this->get('memcache');
-                $cachedData = $memcache->get('index');
+                $cachedData = false;
+                if (method_exists($this, 'get')) {
+                    $memcache = $this->get('memcache');
+                    $cachedData = $memcache->get('index');
+                }
+          
                 if ($cachedData === false) {
                     $data = Movie::all(MovieController::$db);
-                    $memcache->set('index', $data, 3600);
+                    if (isset($memcache)) {
+                        $memcache->set('index', $data, 3600);
+                    }
+                  
                 } else {
                     $data = $cachedData;
                 }
@@ -169,30 +174,35 @@ class MovieController
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
-                $uid =  (int) $args['uid'];
-
-                $memcache = $this->get('memcache');
-                $cachedData = $memcache->get($uid);
+                $uid = (int)$args['uid'];
+                $cachedData = false;
+                if (method_exists($this, 'get')) {
+                    $memcache = $this->get('memcache');
+                    $cachedData = $memcache->get($uid);
+                }
+                  
                 if ($cachedData === false) {
                     $data = Movie::findByUid(MovieController::$db, $uid);
-                    $memcache->set($uid, $data, 3600);
+                    if (isset($memcache)) {
+                        $memcache->set($uid, $data, 3600);
+                    }
                 } else {
                     $data = $cachedData;
                 }
-
+    
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
                     return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
                 }
-
+    
                 $payload = json_encode($data);
-
+    
                 $res->getBody()->write($payload);
-
+    
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
                 MovieController::$logger->error("request to /v1/movie/{uid} " . $e->getMessage());
-
+    
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -264,7 +274,7 @@ class MovieController
                     return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
 
-                $result = Movie::create($this->db, $validatedData);
+                $result = Movie::create(MovieController::$db, $validatedData);
 
                 if ($result) {
                     $res->getBody()->write(json_encode(['message' => 'Movie added successfully']));
@@ -523,15 +533,14 @@ class MovieController
     public function delete(): callable
     {
         return (function (Request $req, Response $res, array $args): Response {
-            $id = $args['id'];
-            $result = Movie::deleteById($this->get(PDO::class), $id);
+            $id = $args['uid'];
+            $result = Movie::deleteById(MovieController::$db, $id);
 
             if ($result) {
                 $res->getBody()->write(json_encode(['message' => 'Movie deleted successfully']));
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');
             } else {
                 MovieController::$logger->error("request to DELETE /v1/movies ");
-
                 $res->getBody()->write(json_encode(['message' => 'Failed to delete movie']));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }

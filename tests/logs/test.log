@@ -1,0 +1,40 @@
+[2023-09-14T08:10:55.949015+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"7639db5"}
+[2023-09-14T08:10:55.957215+00:00] testing_log.ERROR: request to POST /v1/movies Expectation failed for method name is "getBody" when invoked 1 time(s) Parameter count for invocation Slim\Psr7\Message::getBody(): Psr\Http\Message\StreamInterface is too low. [] {"uid":"29d2912"}
+[2023-09-14T08:13:19.632579+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"e0cc625"}
+[2023-09-14T08:13:19.636750+00:00] testing_log.ERROR: request to POST /v1/movies Class "App\Utils\Sanatize\MovieSanitizer" not found [] {"uid":"2136282"}
+[2023-09-14T08:17:39.004035+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"6e11221"}
+[2023-09-14T08:17:39.008402+00:00] testing_log.ERROR: request to POST /v1/movies Class "App\Utils\Sanitize\MovieSanitizer" not found [] {"uid":"d317702"}
+[2023-09-14T08:18:04.796614+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"5dd780c"}
+[2023-09-14T08:18:04.801187+00:00] testing_log.ERROR: request to POST /v1/movies Class "App\Utils\Sanitize\MovieSanitizer" not found [] {"uid":"e1e5cc1"}
+[2023-09-14T08:18:39.118197+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"c5bb3a4"}
+[2023-09-14T08:18:39.122845+00:00] testing_log.ERROR: request to POST /v1/movies Class "App\Utils\Sanitize\MovieSanitizer" not found [] {"uid":"a748bc6"}
+[2023-09-14T08:19:53.516635+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"468092c"}
+[2023-09-14T08:19:53.521215+00:00] testing_log.ERROR: request to POST /v1/movies Class "App\Application\Controllers\Movie\MovieSanitizer" not found [] {"uid":"bbf7cfb"}
+[2023-09-14T08:21:23.292231+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"6cbca49"}
+[2023-09-14T08:21:23.302779+00:00] testing_log.ERROR: request to POST /v1/movies Accessing static property App\Application\Controllers\Movie\MovieController::$db as non static [] {"uid":"318d24b"}
+[2023-09-14T08:22:22.872180+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"b3aa407"}
+[2023-09-14T08:22:46.234888+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"b4a245b"}
+[2023-09-14T08:22:46.241079+00:00] testing_log.ERROR: request to POST /v1/movies SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '1' for key 'uid' [] {"uid":"62ab0ef"}
+[2023-09-14T08:23:28.994431+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"e54b96d"}
+[2023-09-14T08:24:59.202354+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"c7e6827"}
+[2023-09-14T08:33:18.270147+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"bf3e7e9"}
+[2023-09-14T08:33:18.285883+00:00] testing_log.ERROR: request to POST /v1/movies SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '20940423808264265' for key 'uid' [] {"uid":"07ae4ff"}
+[2023-09-14T08:33:18.286527+00:00] testing_log.ERROR: request to /v1/movie/{uid} Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"934cee6"}
+[2023-09-14T08:34:47.164735+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"49084f3"}
+[2023-09-14T08:34:47.189966+00:00] testing_log.ERROR: request to POST /v1/movies SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '20940423808264265' for key 'uid' [] {"uid":"6c0f879"}
+[2023-09-14T08:34:47.190611+00:00] testing_log.ERROR: request to /v1/movie/{uid} Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"74aebe6"}
+[2023-09-14T08:35:23.946481+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"a515628"}
+[2023-09-14T08:35:23.978222+00:00] testing_log.ERROR: request to POST /v1/movies SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '20940423808264265' for key 'uid' [] {"uid":"04872d5"}
+[2023-09-14T08:35:46.580435+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"fb371db"}
+[2023-09-14T08:36:49.459566+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"6bd0b6f"}
+[2023-09-14T08:36:49.468320+00:00] testing_log.ERROR: request to /v1/movie/{uid} Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"110f8a9"}
+[2023-09-14T08:37:23.127985+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"c8002c5"}
+[2023-09-14T08:37:23.136505+00:00] testing_log.ERROR: request to /v1/movie/{uid} Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"b544b75"}
+[2023-09-14T08:37:59.950615+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"5d56998"}
+[2023-09-14T08:37:59.959833+00:00] testing_log.ERROR: request to /v1/movie/{uid} Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"a7333f7"}
+[2023-09-14T08:40:13.441591+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"12fe3fb"}
+[2023-09-14T08:40:13.450441+00:00] testing_log.ERROR: request to /v1/movie/{uid} Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"92ee553"}
+[2023-09-14T08:41:19.997504+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"ff37b5b"}
+[2023-09-14T08:41:20.011994+00:00] testing_log.ERROR: request to /v1/movie/{uid} Undefined property: App\Application\Controllers\Movie\MovieController::$container [] {"uid":"c3fefad"}
+[2023-09-14T08:45:47.631811+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"7d36228"}
+[2023-09-14T08:46:14.699621+00:00] testing_log.ERROR: request to /v1/movies Undefined variable $memcache [] {"uid":"5a38c19"}

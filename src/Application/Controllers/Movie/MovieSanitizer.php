@@ -1,5 +1,6 @@
 <?php 
-namespace App\Utils\Sanatize;
+namespace App\Application\Controllers\Movie;
+
 
 class MovieSanitizer {
     

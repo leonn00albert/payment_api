@@ -136,7 +136,7 @@ class Movie implements MovieInterface
 
     public static function deleteById(PDO $db, int $id): bool {
         try {
-            $sth = $db->prepare("DELETE FROM movies WHERE id = :id");
+            $sth = $db->prepare("DELETE FROM movies WHERE uid = :id");
             $sth->bindParam(':id', $id, PDO::PARAM_INT);
             $sth->execute();
             return $sth->rowCount() > 0;
