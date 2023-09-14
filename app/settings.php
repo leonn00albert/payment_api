@@ -22,8 +22,8 @@ return function (ContainerBuilder $containerBuilder) {
                     'level' => Logger::DEBUG,
                 ],
                 'memcache' => [
-                    'host' => '127.0.0.1', 
-                    'port' => 11211,        
+                    'host' => $_ENV['MEMCACHE_HOST'], 
+                    'port' => (int) $_ENV['MEMCACHE_PORT'],        
                 ],
                 "db" => [
                     'driver' => 'mysql',

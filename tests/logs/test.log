@@ -38,3 +38,16 @@
 [2023-09-14T08:41:20.011994+00:00] testing_log.ERROR: request to /v1/movie/{uid} Undefined property: App\Application\Controllers\Movie\MovieController::$container [] {"uid":"c3fefad"}
 [2023-09-14T08:45:47.631811+00:00] testing_log.ERROR: request to /v1/movies Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"7d36228"}
 [2023-09-14T08:46:14.699621+00:00] testing_log.ERROR: request to /v1/movies Undefined variable $memcache [] {"uid":"5a38c19"}
+[2023-09-14T11:54:44.623342+00:00] testing_log.ERROR: request to PUT /v1/movies Undefined array key "id" [] {"uid":"6f7cdc9"}
+[2023-09-14T11:56:58.136153+00:00] testing_log.ERROR: request to PUT /v1/movies Call to undefined function App\Application\Controllers\Movie\validateAndSanitizeMovieData() [] {"uid":"6be7d48"}
+[2023-09-14T12:02:44.144329+00:00] testing_log.ERROR: request to PATCH /v1/movies Undefined array key "id" [] {"uid":"f6c1669"}
+[2023-09-14T12:03:13.719807+00:00] testing_log.ERROR: request to PATCH /v1/movies Undefined array key "id" [] {"uid":"872a130"}
+[2023-09-14T12:04:42.020041+00:00] testing_log.ERROR: request to PATCH /v1/movies App\Application\Models\Movie::updateById(): Argument #2 ($id) must be of type int, string given, called in /home/leon/Code/jagaad/module-4/bmdb/src/Application/Controllers/Movie/MovieController.php on line 481 [] {"uid":"592e4be"}
+[2023-09-14T12:07:40.135537+00:00] testing_log.ERROR: request to /v1/movie/{uid} Undefined array key "uid" [] {"uid":"4cce6c9"}
+[2023-09-14T12:09:43.303470+00:00] testing_log.ERROR: request to /v1/movie/{uid} Undefined array key "uid" [] {"uid":"ead85e0"}
+[2023-09-14T12:13:26.912546+00:00] testing_log.ERROR: request to  /v1/movies/#/search Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"7478803"}
+[2023-09-14T12:13:40.939859+00:00] testing_log.ERROR: request to  /v1/movies/#/search Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"bf319ad"}
+[2023-09-14T12:15:39.668907+00:00] testing_log.ERROR: request to  /v1/movies/#/filter Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"f2ec0e5"}
+[2023-09-14T12:15:39.672423+00:00] testing_log.ERROR: request to  /v1/movies/#/search Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"05d15ac"}
+[2023-09-14T12:16:01.515706+00:00] testing_log.ERROR: request to  /v1/movies/#/search Call to undefined method App\Application\Controllers\Movie\MovieController::get() [] {"uid":"f4850b3"}
+[2023-09-14T12:18:50.368875+00:00] testing_log.ERROR: request to  /v1/movies/#/search PDOStatement::bindParam(): Argument #2 ($var) cannot be passed by reference [] {"uid":"e738395"}

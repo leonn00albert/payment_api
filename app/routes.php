@@ -29,9 +29,9 @@ return function (App $app) {
     });
 
 
-    $app->get('/v1/swagger.json', $docsController->swaggerFile());
-    $app->post('/v1/register', $AuthController->register());
-    $app->get('/v1/docs', $docsController->index());
+    $app->get('/swagger.json', $docsController->swaggerFile());
+    $app->post('/register', $AuthController->register());
+    $app->get('/docs', $docsController->index());
     $app->get('/v1/movies', $movieController->index());
     $app->get('/v1/movie/{uid}', $movieController->read());
     $app->post('/v1/movies',$movieController->create());

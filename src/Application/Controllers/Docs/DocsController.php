@@ -50,7 +50,7 @@ class DocsController
     window.onload = function () {
         console.log(window.location.pathname);
         const ui = SwaggerUIBundle({
-            url: window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/v1/swagger.json",            dom_id: '#swagger-ui',
+            url: window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/swagger.json",            dom_id: '#swagger-ui',
             deepLinking: true,
             presets: [
                 SwaggerUIBundle.presets.apis,

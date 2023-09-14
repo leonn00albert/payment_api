@@ -5,9 +5,17 @@
         "contact": {
             "email": "leona202307@proton.me"
         },
+        "description": "This API provides access to a database of movies based on user preferences. \n This API uses API keys for authentication. Include your API key in the 'api_key' header for access.",
         "version": "1.0.0"
     },
     "components": {
+        "securitySchemes": {
+            "apiKey": {
+              "type": "apiKey",
+              "in": "header",
+              "name": "api_key"
+            }
+          },
         "schemas": {
             "Movie": {
                 "properties": {
@@ -156,7 +164,7 @@
         }
     },
     "paths": {
-        "/movies": {
+        "v1/movies": {
             "get": {
                 "tags": [
                     "Movies"
@@ -249,7 +257,7 @@
                 }
             }
         },
-        "/movies/{uid}": {
+        "/v1/movies/{uid}": {
             "get": {
                 "tags": [
                     "Movies"
@@ -298,7 +306,7 @@
                 }
             }
         },
-        "/movies/{id}": {
+        "/v1/movies/{id}": {
             "put": {
                 "tags": [
                     "Movies"
@@ -558,7 +566,7 @@
                 }
             }
         },
-        "/moviesPerPage": {
+        "/v1/movies/{moviesPerPage}": {
             "get": {
                 "tags": [
                     "Movies"

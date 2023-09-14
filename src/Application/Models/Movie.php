@@ -70,7 +70,7 @@ class Movie implements MovieInterface
         $sort = 'column_name_to_sort_by ASC'; 
         $sql = "SELECT * FROM movies WHERE title LIKE :search LIMIT :offset, :n";
         $sth = $db->prepare($sql);
-        $sth->bindParam(':search', "%$search%", PDO::PARAM_STR);
+        $sth->bindValue(':search', "%$search%", PDO::PARAM_STR);
         $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
         $sth->bindParam(':n', $numberPerPage, PDO::PARAM_INT);
         $sth->execute();

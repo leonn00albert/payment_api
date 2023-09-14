@@ -353,23 +353,30 @@ class MovieController
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
-                $id = $args['id'];
-                $postData = $req->getParsedBody();
-                $validatedData = validateAndSanitizeMovieData($postData);
+                $uid = $args['uid'];
+
+                $rawJson = $req->getBody()->getContents();
+                if (empty($rawJson)) {
+                    $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
+                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                }
+                $postData = json_decode($rawJson, true);
+        
+                $validatedData = MovieSanitizer::sanitize($postData);
 
                 if (!$validatedData) {
                     $res->getBody()->write(json_encode(['message' => 'Invalid input data']));
                     return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
 
-                $existingMovie = Movie::findById($this->get(PDO::class), $id);
+                $existingMovie = Movie::findByUid(MovieController::$db, $uid);
 
                 if (!$existingMovie) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
                     return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
                 }
 
-                $result = Movie::updateById($this->get(PDO::class), $id, $validatedData);
+                $result = Movie::updateById(MovieController::$db,$existingMovie['id'], $validatedData);
 
                 if ($result) {
                     $res->getBody()->write(json_encode(['message' => 'Movie updated successfully']));
@@ -450,23 +457,28 @@ class MovieController
     {
         return function (Request $req, Response $res, array $args): Response {
             try {
-                $id = $args['id'];
-                $postData = $req->getParsedBody();
-                $validatedData = validateAndSanitizeMovieData($postData);
-
+                $uid = $args['uid'];
+                $rawJson = $req->getBody()->getContents();
+                if (empty($rawJson)) {
+                    $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
+                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                }
+                $postData = json_decode($rawJson, true);
+        
+                $validatedData = MovieSanitizer::sanitize($postData);
                 if (!$validatedData) {
                     $res->getBody()->write(json_encode(['message' => 'Invalid input data']));
                     return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
 
-                $existingMovie = Movie::findById($this->get(PDO::class), $id);
+                $existingMovie = Movie::findByUid(MovieController::$db, $uid);
 
                 if (!$existingMovie) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
                     return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
                 }
 
-                $result = Movie::updateById($this->get(PDO::class), $id, $validatedData);
+                $result = Movie::updateById(MovieController::$db, (int) $existingMovie['uid'], $validatedData);
 
                 if ($result) {
                     $res->getBody()->write(json_encode(['message' => 'Movie updated successfully']));
@@ -582,12 +594,18 @@ class MovieController
         return (function (Request $req, Response $res, array $args): Response {
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
+                $cachedData = false;
+                if (method_exists($this, 'get')) {
+                    $memcache = $this->get('memcache');
+                    $cachedData = $memcache->get("index_page" . $numberPerPage);
 
-                $memcache = $this->get('memcache');
-                $cachedData = $memcache->get("index_page" . $numberPerPage);
+                }
+
                 if ($cachedData === false) {
-                    $data = Movie::byNumberPerPage($this->get(PDO::class), (int) $numberPerPage);
-                    $memcache->set("index_page" . $numberPerPage, $data, 3600);
+                    $data = Movie::byNumberPerPage(MovieController::$db, (int) $numberPerPage);
+                    if (isset($memcache)){
+                        $memcache->set("index_page" . $numberPerPage, $data, 3600);
+                    } 
                 } else {
                     $data = $cachedData;
                 }
@@ -648,12 +666,18 @@ class MovieController
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $sortBy = Field::isValid($args['sort']) ? $args['sort'] : throw new Exception("Not a valid sort option can be only : " . json_encode(Field::toArray()));
+                $cachedData = false;
+                if (method_exists($this, 'get')) {
+                    $memcache = $this->get('memcache');
+                    $cachedData = $memcache->get("index_page" . $numberPerPage);
 
-                $memcache = $this->get('memcache');
-                $cachedData = $memcache->get("index_page" . $numberPerPage . "_"  . $sortBy);
+                }
+           
                 if ($cachedData === false) {
-                    $data = Movie::byNumberPerPageAndSort($this->get(PDO::class), (int) $numberPerPage, $sortBy);
-                    $memcache->set("index_page" . $numberPerPage . "_"  . $sortBy, $data, 3600);
+                    $data = Movie::byNumberPerPageAndSort(MovieController::$db, (int) $numberPerPage, $sortBy);
+                    if(isset($memcache)){
+                        $memcache->set("index_page" . $numberPerPage . "_"  . $sortBy, $data, 3600);
+                    }
                 } else {
                     $data = $cachedData;
                 }
@@ -722,12 +746,18 @@ class MovieController
             try {
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $filter = Field::isValid($args['filter']) ? $args['filter'] : throw new Exception("Not a valid filter option can be only : " . json_encode(Field::toArray()));
+                $cachedData = false;
+                if (method_exists($this, 'get')) {
+                    $memcache = $this->get('memcache');
+                    $cachedData = $memcache->get("index_page" . $numberPerPage);
 
-                $memcache = $this->get('memcache');
-                $cachedData = $memcache->get("index_page" . $numberPerPage . "_"  . $filter);
+                }
                 if ($cachedData === false) {
-                    $data = Movie::byNumberPerPageAndFilter($this->get(PDO::class), (int) $numberPerPage, $filter);
-                    $memcache->set("index_page" . $numberPerPage . "_"  . $filter, $data, 3600);
+                    $data = Movie::byNumberPerPageAndFilter(MovieController::$db, (int) $numberPerPage, $filter);
+                    if(isset($memcache))
+                    {
+                        $memcache->set("index_page" . $numberPerPage . "_"  . $filter, $data, 3600);
+                    }
                 } else {
                     $data = $cachedData;
                 }
@@ -799,13 +829,20 @@ class MovieController
     {
         return (function (Request $req, Response $res, array $args): Response {
             try {
+                
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $search = isset($args['search']) ? $args['search'] : throw new Exception("Not a valid search query");
-                $memcache = $this->get('memcache');
-                $cachedData = $memcache->get("index_page" . $numberPerPage . "_"  . $search);
+                $cachedData = false;
+                if (method_exists($this, 'get')) {
+                    $memcache = $this->get('memcache');
+                    $cachedData = $memcache->get("index_page" . $numberPerPage);
+
+                }
                 if ($cachedData === false) {
-                    $data = Movie::byNumberPerPageAndFilter($this->get(PDO::class), (int) $numberPerPage, $search);
-                    $memcache->set("index_page" . $numberPerPage . "_"  . $search, $data, 3600);
+                    $data = Movie::byNumberPerPageAndFilter(MovieController::$db, (int) $numberPerPage, $search);
+                    if (isset($memcache)) {
+                        $memcache->set("index_page" . $numberPerPage . "_"  . $search, $data, 3600);
+                    }
                 } else {
                     $data = $cachedData;
                 }

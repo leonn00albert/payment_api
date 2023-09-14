@@ -28,20 +28,22 @@ return function (App $app) {
     };
 
     $AuthMiddleware = function ($request, $handler) {
-        if($_ENV["environment"] !== 'test'){
+        $requestUri = $request->getUri();
+        $version = $requestUri->getPath(); // Get the requested URI path
+            if (strpos($version, '/v1/') === 0) {
             $apiKey = $request->getHeaderLine('api_key');
-        
-            if (isset($apiKey))
-                if (AuthController::checkIfKeyIsAllowed($apiKey)) {
-                    return $handler->handle($request);
-                }
-            
+    
+            if (isset($apiKey) && AuthController::checkIfKeyIsAllowed($apiKey)) {
+                return $handler->handle($request);
+            }
+    
             $response = new \Slim\Psr7\Response();
             $response = $response->withStatus(401);
-            $response->getBody()->write("Unauthorized! register your email at v1/register");
+            $response->getBody()->write("Unauthorized! Register your email at v1/register");
             return $response;
         }
- 
+    
+        return $handler->handle($request);
     };
     $app->add($AuthMiddleware);
     $app->add(SessionMiddleware::class);

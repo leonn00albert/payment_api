@@ -87,6 +87,102 @@ class MovieControllerTest extends TestCase
 
         $this->assertEquals(200, $result->getStatusCode());
     }
+    public function testUpdate()
+    {
+        $controller = new MovieController($this->db, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $args = ['uid' => 0001123123213242324111];
+        $jsonData = [
+            'uid' => 0001123123213242324111,
+            'title' => "test movie update",
+            'year' => 2003,
+        ];
+
+        $jsonBody = json_encode($jsonData);
+        $streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->expects($this->once())
+        ->method('getContents')
+        ->willReturn($jsonBody);
+
+        $request->expects($this->once())
+        ->method('getBody')
+        ->willReturn($stream);
+
+        $result = $controller->update()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+
+    public function testPatch()
+    {
+        $controller = new MovieController($this->db, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $args = ['uid' => 0001123123213242324111];
+        $jsonData = [
+            'uid' => 0001123123213242324111,
+            'title' => "test movie patch",
+        ];
+
+        $jsonBody = json_encode($jsonData);
+        $streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->expects($this->once())
+        ->method('getContents')
+        ->willReturn($jsonBody);
+
+        $request->expects($this->once())
+        ->method('getBody')
+        ->willReturn($stream);
+
+        $result = $controller->patch()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+
+    public function testMoviesPerPage()
+    {
+        $controller = new MovieController($this->db, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $args = ['numberPerPage' => 1];
+        $result = $controller->moviesPerPage()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+    public function testMoviesPerPageAndSort()
+    {
+        $controller = new MovieController($this->db, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $args = ['numberPerPage' => 1, "sort" => "title" ];
+        $result = $controller->moviesPerPageAndSort()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+    public function testMoviesPerPageAndFilter()
+    {
+        $controller = new MovieController($this->db, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $args = ['numberPerPage' => 1, "filter" => "title" ];
+        $result = $controller->moviesPerPageAndFilter()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+
+    public function testMoviesPerPageAndSearch()
+    {
+        $controller = new MovieController($this->db, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $args = ['numberPerPage' => 1, "search" => "test movie patch"];
+        $result = $controller->moviesPerPageAndSearch()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
 
     public function testDelete()
     {

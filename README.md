@@ -1,45 +1,40 @@
-# Slim Framework 4 Skeleton Application
+Module 4 Project - Movie details API
 
-[![Coverage Status](https://coveralls.io/repos/github/slimphp/Slim-Skeleton/badge.svg?branch=master)](https://coveralls.io/github/slimphp/Slim-Skeleton?branch=master)
+Develop a CRUD REST Movie details API using the Slim PHP framework. The API should adhere to RESTful principles, utilize Composer for package management, and integrate Swagger for API 
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 4 application. This application uses the latest Slim 4 with Slim PSR-7 implementation and PHP-DI container implementation. It also uses the Monolog logger.
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+## Requirements
 
-## Install the Application
+1. Memcache 
+2. MariaDB 
 
-Run this command from the directory in which you want to install your new Slim Framework application. You will require PHP 7.4 or newer.
-
-```bash
-composer create-project slim/slim-skeleton [my-app-name]
-```
-
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
-
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writable.
-
-To run the application in development, you can run these commands 
+## Setup 
+1. Setup your env file 
 
 ```bash
-cd [my-app-name]
-composer start
+DRIVER=
+HOST=
+DATABASE=
+USERNAME=
+PASSWORD=
+ENVIRONMENT=
+TMDB_ACCESS_TOKEN=
+MEMCACHE_HOST=
+MEMCACHE_PORT=
 ```
 
-Or you can use `docker-compose` to run the app with `docker`, so you can run these commands:
-```bash
-cd [my-app-name]
-docker-compose up -d
+use the seed.sql file to seed your db  
+
+
+## Usage 
+
+You can register  your email to get an API to access the v1 routes API docs a can be found at /docs
+
+http header :
+Content-Type : application/json
+api_key : Your API KEY
+
 ```
-After that, open `http://localhost:8080` in your browser.
-
-Run this command in the application directory to run the test suite
-
-```bash
-composer test
-```
-
-That's it! Now go build something cool.
 
 
 
@@ -76,13 +71,3 @@ GET /v1/movies/{numberPerPage}/sort/{fieldToSort} - get list of {numberPerPage} 
 
 ```
 
-
-
-``` JSON
-//JSON schema of response for (b - e):
-{
- "status": "200/400/404/500",
- "message": "some kind of informative message bla bla bla…"
-}
-
-```
