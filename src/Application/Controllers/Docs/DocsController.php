@@ -70,7 +70,7 @@ HTML;
         };
     }
 
-    public function swaggerFile()
+    public function swaggerFile(): closure
     {
         return (function (Request $req, Response $res) {
             $swaggerJsonPath = __DIR__ . '/../../../../swagger.json';

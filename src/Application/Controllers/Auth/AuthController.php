@@ -12,7 +12,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Throwable;
 
-
 class AuthController
 {
     /**
@@ -30,15 +29,19 @@ class AuthController
      *     )
      *   )
      * )
+     *
+     *  * Register a new user and return API key
+     * @return callable The HTTP response with JSON data.
      */
 
-    public function register(): Closure
+
+    public function register(): callable
     {
-        return function (Request $req, Response $res) {
+        return (function (Request $req, Response $res) {
             $rawJson = $req->getBody()->getContents();
             if (empty($rawJson)) {
                 $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
-                return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
             }
             $postData = json_decode($rawJson, true);
             try {
@@ -57,7 +60,7 @@ class AuthController
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');
             }
-        };
+        });
     }
     /**
      * Generate a random API key.

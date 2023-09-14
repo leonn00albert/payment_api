@@ -12,7 +12,6 @@ use Exception;
 use PDO;
 use Psr\Log\LoggerInterface;
 
-
 /**
  * Enum representing fields for a movie.
  */
@@ -65,11 +64,10 @@ enum Field: string
  */
 class MovieController
 {
-
     protected static PDO $db;
-    protected static  $logger;
+    protected static $logger;
 
-    public function __construct(PDO $db,  $logger)
+    public function __construct(PDO $db, $logger)
     {
         self::$db = $db;
         self::$logger = $logger;
@@ -108,13 +106,12 @@ class MovieController
                     $memcache = $this->get('memcache');
                     $cachedData = $memcache->get('index');
                 }
-          
+
                 if ($cachedData === false) {
                     $data = Movie::all(MovieController::$db);
                     if (isset($memcache)) {
                         $memcache->set('index', $data, 3600);
                     }
-                  
                 } else {
                     $data = $cachedData;
                 }
@@ -162,13 +159,8 @@ class MovieController
      *         )
      *     ),
      * )
-     *  * Read a movie by UID.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     *  * Read a movie by UID
+     * @return callable The HTTP response with JSON data.
      */
     public function read(): callable
     {
@@ -180,7 +172,7 @@ class MovieController
                     $memcache = $this->get('memcache');
                     $cachedData = $memcache->get($uid);
                 }
-                  
+
                 if ($cachedData === false) {
                     $data = Movie::findByUid(MovieController::$db, $uid);
                     if (isset($memcache)) {
@@ -189,20 +181,20 @@ class MovieController
                 } else {
                     $data = $cachedData;
                 }
-    
+
                 if (!$data) {
                     $res->getBody()->write(json_encode(['message' => 'Movie not found']));
                     return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
                 }
-    
+
                 $payload = json_encode($data);
-    
+
                 $res->getBody()->write($payload);
-    
+
                 return $res->withHeader('Content-Type', 'application/json');
             } catch (\Throwable $e) {
                 MovieController::$logger->error("request to /v1/movie/{uid} " . $e->getMessage());
-    
+
                 $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
                 return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
             }
@@ -250,11 +242,7 @@ class MovieController
      *     ),
      * )
      *  * Create a new movie.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function create(): callable
     {
@@ -263,7 +251,7 @@ class MovieController
                 $rawJson = $req->getBody()->getContents();
                 if (empty($rawJson)) {
                     $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
-                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
                 $postData = json_decode($rawJson, true);
 
@@ -342,12 +330,7 @@ class MovieController
      *     ),
      * )
      *  * Update a movie by ID using the PUT method.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function update(): callable
     {
@@ -358,10 +341,10 @@ class MovieController
                 $rawJson = $req->getBody()->getContents();
                 if (empty($rawJson)) {
                     $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
-                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
                 $postData = json_decode($rawJson, true);
-        
+
                 $validatedData = MovieSanitizer::sanitize($postData);
 
                 if (!$validatedData) {
@@ -376,7 +359,7 @@ class MovieController
                     return $res->withStatus(404)->withHeader('Content-Type', 'application/json');
                 }
 
-                $result = Movie::updateById(MovieController::$db,$existingMovie['id'], $validatedData);
+                $result = Movie::updateById(MovieController::$db, $existingMovie['id'], $validatedData);
 
                 if ($result) {
                     $res->getBody()->write(json_encode(['message' => 'Movie updated successfully']));
@@ -443,14 +426,9 @@ class MovieController
      *         )
      *     ),
      * )
-     * 
+     *
      * Update a movie by ID using the PATCH method.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
 
     public function patch(): callable
@@ -461,10 +439,10 @@ class MovieController
                 $rawJson = $req->getBody()->getContents();
                 if (empty($rawJson)) {
                     $res->getBody()->write(json_encode(['error' => 'Invalid JSON data']));
-                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');               
+                    return $res->withStatus(400)->withHeader('Content-Type', 'application/json');
                 }
                 $postData = json_decode($rawJson, true);
-        
+
                 $validatedData = MovieSanitizer::sanitize($postData);
                 if (!$validatedData) {
                     $res->getBody()->write(json_encode(['message' => 'Invalid input data']));
@@ -533,14 +511,9 @@ class MovieController
      *         )
      *     ),
      * )
-     * 
+     *
      *  * Delete a movie by ID.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function delete(): callable
     {
@@ -582,12 +555,7 @@ class MovieController
      *     )
      * )
      *  * Get a paginated list of movies.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function moviesPerPage(): callable
     {
@@ -598,14 +566,13 @@ class MovieController
                 if (method_exists($this, 'get')) {
                     $memcache = $this->get('memcache');
                     $cachedData = $memcache->get("index_page" . $numberPerPage);
-
                 }
 
                 if ($cachedData === false) {
                     $data = Movie::byNumberPerPage(MovieController::$db, (int) $numberPerPage);
-                    if (isset($memcache)){
+                    if (isset($memcache)) {
                         $memcache->set("index_page" . $numberPerPage, $data, 3600);
-                    } 
+                    }
                 } else {
                     $data = $cachedData;
                 }
@@ -651,14 +618,9 @@ class MovieController
      *         @OA\JsonContent(type="object", @OA\Property(property="error", type="string"))
      *     )
      * )
-     * 
+     *
      *  * Get a paginated and sorted list of movies.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function moviesPerPageAndSort(): callable
     {
@@ -670,12 +632,11 @@ class MovieController
                 if (method_exists($this, 'get')) {
                     $memcache = $this->get('memcache');
                     $cachedData = $memcache->get("index_page" . $numberPerPage);
-
                 }
-           
+
                 if ($cachedData === false) {
                     $data = Movie::byNumberPerPageAndSort(MovieController::$db, (int) $numberPerPage, $sortBy);
-                    if(isset($memcache)){
+                    if (isset($memcache)) {
                         $memcache->set("index_page" . $numberPerPage . "_"  . $sortBy, $data, 3600);
                     }
                 } else {
@@ -733,12 +694,7 @@ class MovieController
      *     )
      * )
      *  * Get a paginated and filtered list of movies.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function moviesPerPageAndFilter(): callable
     {
@@ -750,12 +706,10 @@ class MovieController
                 if (method_exists($this, 'get')) {
                     $memcache = $this->get('memcache');
                     $cachedData = $memcache->get("index_page" . $numberPerPage);
-
                 }
                 if ($cachedData === false) {
                     $data = Movie::byNumberPerPageAndFilter(MovieController::$db, (int) $numberPerPage, $filter);
-                    if(isset($memcache))
-                    {
+                    if (isset($memcache)) {
                         $memcache->set("index_page" . $numberPerPage . "_"  . $filter, $data, 3600);
                     }
                 } else {
@@ -818,25 +772,18 @@ class MovieController
      *     )
      * )
      *  * Get a paginated and searched list of movies.
-     *
-     * @param Request $req The HTTP request object.
-     * @param Response $res The HTTP response object.
-     * @param array $args The route arguments.
-     *
-     * @return Response The HTTP response with JSON data.
+     * @return callable The HTTP response with JSON data.
      */
     public function moviesPerPageAndSearch(): callable
     {
         return (function (Request $req, Response $res, array $args): Response {
             try {
-                
                 $numberPerPage = is_numeric($args['numberPerPage']) ? $args['numberPerPage'] : throw new Exception("Not a number");
                 $search = isset($args['search']) ? $args['search'] : throw new Exception("Not a valid search query");
                 $cachedData = false;
                 if (method_exists($this, 'get')) {
                     $memcache = $this->get('memcache');
                     $cachedData = $memcache->get("index_page" . $numberPerPage);
-
                 }
                 if ($cachedData === false) {
                     $data = Movie::byNumberPerPageAndFilter(MovieController::$db, (int) $numberPerPage, $search);

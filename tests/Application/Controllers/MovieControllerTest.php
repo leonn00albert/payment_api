@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/../../../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
@@ -186,7 +187,7 @@ class MovieControllerTest extends TestCase
 
     public function testDelete()
     {
-   
+
         $controller = new MovieController($this->db, $this->logger);
         $request = $this->createMock(Request::class);
         $response = new Response();
@@ -195,6 +196,4 @@ class MovieControllerTest extends TestCase
 
         $this->assertEquals(200, $result->getStatusCode());
     }
-
-
 }

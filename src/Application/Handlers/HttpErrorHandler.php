@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application\Handlers;
@@ -10,7 +11,7 @@ use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 class HttpErrorHandler extends SlimErrorHandler
 {
     /**
-     * @inheritdoc  
+     * @inheritdoc
      */
     protected function respond(): Response
     {
@@ -22,7 +23,7 @@ class HttpErrorHandler extends SlimErrorHandler
             $statusCode = $exception->getCode();
             $errorMessage = $exception->getMessage();
 
-            if($statusCode == 405) {
+            if ($statusCode == 405) {
                 $statusCode = 404;
                 $errorMessage = "page no found!";
             }

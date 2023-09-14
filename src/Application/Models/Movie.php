@@ -1,34 +1,37 @@
 <?php
+
 namespace App\Application\Models;
+
 use PDO;
 use PDOException;
 use App\Application\Models\MovieInterface;
+
 class Movie implements MovieInterface
 {
-    protected $table = 'movies';
-    protected $primaryKey = 'uid';
+    protected string $table = 'movies';
+    protected string $primaryKey = 'uid';
 
-    protected $db; // Store the database connection
+    protected PDO $db;
 
     public function __construct(PDO $db)
     {
         $this->db = $db;
     }
 
-    public static function all(PDO $db):array
+    public static function all(PDO $db): array
     {
         $sth = $db->prepare("SELECT * FROM movies");
         $sth->execute();
         $data = $sth->fetchAll(PDO::FETCH_ASSOC);
         return $data;
-    } 
+    }
     public static function findByUid(PDO $db, int $uid): ?array
     {
         $sth = $db->prepare("SELECT * FROM movies WHERE uid = :uid LIMIT 1");
         $sth->bindParam(':uid', $uid, PDO::PARAM_STR);
         $sth->execute();
         $data = $sth->fetch(PDO::FETCH_ASSOC);
-    
+
         return $data ? $data : null;
     }
 
@@ -36,7 +39,7 @@ class Movie implements MovieInterface
     {
             /** @var PDO $db */
             $sth = $db->prepare("SELECT * FROM movies LIMIT :offset, :n");
-            $offset = 0; 
+            $offset = 0;
             $sth->bindValue(':offset', $offset, PDO::PARAM_INT);
             $sth->bindValue(':n', $numberPerPage, PDO::PARAM_INT);
             $sth->execute();
@@ -46,8 +49,8 @@ class Movie implements MovieInterface
     public static function byNumberPerPageAndSort(PDO $db, int $numberPerPage, string $sort): ?array
     {
         /** @var PDO $db */
-        $offset = 0; 
-        $sth = $db->prepare("SELECT * FROM movies ORDER BY $sort LIMIT :offset, :n"); 
+        $offset = 0;
+        $sth = $db->prepare("SELECT * FROM movies ORDER BY $sort LIMIT :offset, :n");
         $sth->bindParam(':offset', $offset, PDO::PARAM_INT);
         $sth->bindParam(':n', $numberPerPage, PDO::PARAM_INT);
         $sth->execute();
@@ -67,7 +70,7 @@ class Movie implements MovieInterface
     public static function byNumberPerPageAndSearch(PDO $db, int $numberPerPage, string $search): ?array
     {
         $offset = 0;
-        $sort = 'column_name_to_sort_by ASC'; 
+        $sort = 'column_name_to_sort_by ASC';
         $sql = "SELECT * FROM movies WHERE title LIKE :search LIMIT :offset, :n";
         $sth = $db->prepare($sql);
         $sth->bindValue(':search', "%$search%", PDO::PARAM_STR);
@@ -76,15 +79,15 @@ class Movie implements MovieInterface
         $sth->execute();
         return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
-    public static function findById(PDO $db, int $id):array
+    public static function findById(PDO $db, int $id): array
     {
         $sth = $db->prepare("SELECT * FROM movies WHERE id = :id LIMIT 1");
         $sth->bindParam(':id', $id);
         $sth->execute();
         $data = $sth->fetch(PDO::FETCH_ASSOC);
         return $data;
-    } 
-    public static function create(PDO $db, array $validatedData):bool
+    }
+    public static function create(PDO $db, array $validatedData): bool
     {
             $sth = $db->prepare("INSERT INTO movies (uid, title, year, released, runtime, genre, director, actors, country, poster, imdb, type, created_at, updated_at, overview, imdb_id) 
                                  VALUES (:uid, :title, :year, :released, :runtime, :genre, :director, :actors, :country, :poster, :imdb, :type, NOW(), NOW(), :overview, :imdb_id)");
@@ -102,12 +105,13 @@ class Movie implements MovieInterface
             $sth->bindParam(':type', $validatedData['type']);
             $sth->bindParam(':overview', $validatedData['overview']);
             $sth->bindParam(':imdb_id', $validatedData['imdb_id']);
-    
+
             $result = $sth->execute();
             return $result;
-    } 
+    }
 
-    public static function updateById(PDO $db, int $id, array $validatedData):bool{
+    public static function updateById(PDO $db, int $id, array $validatedData): bool
+    {
         $sth = $db->prepare("UPDATE movies 
                              SET uid = :uid, title = :title, year = :year, released = :released, 
                                  runtime = :runtime, genre = :genre, director = :director, 
@@ -134,7 +138,8 @@ class Movie implements MovieInterface
         return $sth->execute();
     }
 
-    public static function deleteById(PDO $db, int $id): bool {
+    public static function deleteById(PDO $db, int $id): bool
+    {
         try {
             $sth = $db->prepare("DELETE FROM movies WHERE uid = :id");
             $sth->bindParam(':id', $id, PDO::PARAM_INT);
