@@ -1,0 +1,28 @@
+name: PHPStan Scan
+
+on:
+  push:
+    branches:
+      - master  # Adjust this to match the main branch name of your repository
+  pull_request:
+    branches:
+      - master  # Adjust this to match the main branch name of your repository
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2 
+
+    - name: Install Composer dependencies
+      run: composer install
+
+    - name: Run PHPStan
+      run: ./vendor/bin/phpstan  analyze --level 5 --no-progress --no-interaction ./src
