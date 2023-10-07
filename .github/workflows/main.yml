@@ -35,6 +35,9 @@ jobs:
       - name: Set up environment variables
         run: echo "$ENV_FILE" > .env
         
+      - name: Show environment variables
+        run: echo "$ENV_FILE" 
+        
       - name: Wait for MySQL to start
         run: |
           echo "Waiting for MySQL to start..."
