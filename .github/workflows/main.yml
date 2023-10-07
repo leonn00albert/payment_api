@@ -33,7 +33,7 @@ jobs:
         run: composer install
         
       - name: Set up environment variables
-        run: echo "$ENV_FILE_CONTENTS" > .env
+        run: echo "$ENV_FILE" > .env
         
       - name: Wait for MySQL to start
         run: |
