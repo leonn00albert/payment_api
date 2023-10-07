@@ -49,7 +49,12 @@ jobs:
 
       - name: Show environment variables
         run: cat .env
-
+        
+      - name: Show path and ls
+        run: |
+          pwd
+          ls -la
+          
       - name: Wait for MySQL to start
         run: |
           echo "Waiting for MySQL to start..."
