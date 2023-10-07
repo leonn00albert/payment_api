@@ -9,7 +9,8 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         LoggerInterface::class => function (ContainerInterface $c) {
@@ -34,20 +35,6 @@ return function (ContainerBuilder $containerBuilder) {
             $memcache->addServer($settings['host'], $settings['port']);
             return $memcache;
         },
-        PDO::class => function (ContainerInterface $c) {
 
-            $settings = $c->get(SettingsInterface::class);
-
-            $dbSettings = $settings->get('db');
-
-            $host = $dbSettings['host'];
-            $dbname = $dbSettings['database'];
-            $username = $dbSettings['username'];
-            $password = $dbSettings['password'];
-            $charset = $dbSettings['charset'];
-            $flags = $dbSettings['flags'];
-            $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
-            return new PDO($dsn, $username, $password);
-        },
     ]);
 };

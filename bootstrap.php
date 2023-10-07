@@ -1,11 +1,11 @@
 <?php
 // bootstrap.php
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once 'vendor/autoload.php';
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 $isDevMode = true; // 
 
