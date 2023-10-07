@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Controllers\Auth\AuthController;
 use App\Application\Controllers\Docs\DocsController;
 use App\Application\Controllers\Movie\MovieController;
+use App\Application\Controllers\Payment\PaymentController;
 use App\Utils\SeedMovies;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,8 +15,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-
-    $docsController = new PaymentController;
+    $paymentControlller = new PaymentController($app->getContainer()->get(LoggerInterface::class));
     $docsController = new DocsController;
     $AuthController = new AuthController;
 
@@ -27,6 +27,7 @@ return function (App $app) {
         $response->getBody()->write('Hello world!');
         return $response;
     });
+    $app->get('/v1/payments', $paymentControlller->index());
 
     $app->group("/v1/customers",function ($group) {
         $group->get('/v1/customers', 'Controller');

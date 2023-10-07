@@ -10,35 +10,29 @@ use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 require __DIR__ . '/../vendor/autoload.php';
 
-
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
-// Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-if (false) { // Should be set to true in production
+if (false) { 
 	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
-// Set up settings
 $settings = require __DIR__ . '/../app/settings.php';
 $settings($containerBuilder);
 
-// Set up dependencies
 $dependencies = require __DIR__ . '/../app/dependencies.php';
 $dependencies($containerBuilder);
 
-// Set up repositories
 $repositories = require __DIR__ . '/../app/repositories.php';
 $repositories($containerBuilder);
 
-// Build PHP-DI Container instance
 $container = $containerBuilder->build();
 
-// Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $callableResolver = $app->getCallableResolver();
+$container->set('doctrine', require __DIR__ . '/../config/doctrine.php');
 
 // Register middleware
 $middleware = require __DIR__ . '/../app/middleware.php';

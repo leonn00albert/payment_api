@@ -35,23 +35,6 @@ return function (ContainerBuilder $containerBuilder) {
             $memcache->addServer($settings['host'], $settings['port']);
             return $memcache;
         },
-        "doctrine" => function (ContainerInterface $c) {
-            
-            $isDevMode = true;
-            $config = Setup::createAnnotationMetadataConfiguration([__DIR__ . "/src"], $isDevMode);
 
-            $settings = $c->get(SettingsInterface::class);
-            $dbSettings = $settings->get('db');
-            $conn = [
-                'driver' => 'pdo_mysql',
-                'host' => $dbSettings['host'],
-                'dbname' => $dbSettings['database'],
-                'user' => $dbSettings['username'],
-                'password' => $dbSettings['password'],
-                'charset' => $dbSettings['charset'],
-            ];
-            
-            return EntityManager::create($conn, $config);
-        },
     ]);
 };

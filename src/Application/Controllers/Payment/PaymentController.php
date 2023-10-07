@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Payment;
-
+require_once (__DIR__ . "/../../../../bootstrap.php");
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Models\Movie;
+use App\Application\Models\Payment;
+use DateTime;
 use OpenApi\Annotations as OA;
 use Exception;
 use PDO;
@@ -25,20 +27,20 @@ class PaymentController
     {
         return function (Request $req, Response $res): Response {
             try {
-                $cachedData = false;
-                if (method_exists($this, 'get')) {
-                    $memcache = $this->get('memcache');
-                    $cachedData = $memcache->get('payment_index');
-                }
-
-                if ($cachedData === false) {
-                    $data = Payments::all();
-                    if (isset($memcache)) {
-                        $memcache->set('payment_index', $data, 3600);
-                    }
-                } else {
-                    $data = $cachedData;
-                }
+                $entityManager = $this->get('doctrine');
+                $payment = $entityManager->getRepository(Payment::class);
+                $data = $payment->findAll();
+                $payment = new Payment();
+                $payment->setDescription("daasdas");
+                $payment->setAmount(2000);
+                $payment->setCreatedAt(new DateTime());
+                $payment->setFromCustomer(1);
+                $payment->setToCustomer(2);
+            
+                // Persist the Payment entity to the database
+                $entityManager->persist($payment);
+                $entityManager->flush(); // Save changes to the database
+            
                 $payload = json_encode($data);
                 $res->getBody()->write($payload);
 

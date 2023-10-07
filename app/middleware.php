@@ -45,7 +45,7 @@ return function (App $app) {
     
         return $handler->handle($request);
     };
-    $app->add($AuthMiddleware);
+   // $app->add($AuthMiddleware);
     $app->add(SessionMiddleware::class);
     $app->add($LoggerMiddleware);
 };
