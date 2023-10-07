@@ -15,7 +15,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
 
-    $movieController = new MovieController($app->getContainer()->get(PDO::class), $app->getContainer()->get(LoggerInterface::class));
+    $docsController = new PaymentController;
     $docsController = new DocsController;
     $AuthController = new AuthController;
 
@@ -28,20 +28,19 @@ return function (App $app) {
         return $response;
     });
 
+    $app->group("/v1/customers",function ($group) {
+        $group->get('/v1/customers', 'Controller');
+        $group->post('/v1/customers','Controller');
+        $group->delete('/v1/customers/{id:[0-9]+}', 'Controller');
+        $group->put('/v1/customers/{id:[0-9]+}', 'Controller');
+        $group->get('/v1/customers/deactivate/{id:[0-9]+}','Controller');
+        $group->get('/v1/customers/reactivate/{id:[0-9]+}', 'Controller');
+    });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
     $app->post('/register', $AuthController->register());
     $app->get('/docs', $docsController->index());
-    $app->get('/v1/movies', $movieController->index());
-    $app->get('/v1/movie/{uid}', $movieController->read());
-    $app->post('/v1/movies', $movieController->create());
-    $app->put('/v1/movies/{id}', $movieController->update());
-    $app->patch('/v1/movies/{id}', $movieController->patch());
-    $app->delete('/v1/movies/{id}', $movieController->delete());
-    $app->get('/v1/movies/{numberPerPage}', $movieController->moviesPerPage());
-    $app->get('/v1/movies/{numberPerPage}/sort/{sort}', $movieController->moviesPerPageAndSort());
-    $app->get('/v1/movies/{numberPerPage}/filter/{filter}', $movieController->moviesPerPageAndFilter());
-    $app->get('/v1/movies/{numberPerPage}/search/{search}', $movieController->moviesPerPageAndSearch());
+
 
     $app->get('/seed', function (Request $request, Response $response) {
         $seeder = new SeedMovies();

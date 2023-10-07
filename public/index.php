@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-use Illuminate\Database\Capsule\Manager as Capsule;
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
 use App\Application\ResponseEmitter\ResponseEmitter;
@@ -9,8 +8,9 @@ use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
- 
 require __DIR__ . '/../vendor/autoload.php';
+
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 // Instantiate PHP-DI ContainerBuilder
