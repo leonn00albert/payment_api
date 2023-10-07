@@ -8,9 +8,9 @@ on:
 
 env:
   # Setting environment variables with the values of secrets
-  HOST: ${{ secrets.HOST }}
-  USERNAME: ${{ secrets.USER }}
-  PASSWORD: ${{ secrets.PASSWORD }}
+  HOST: '127.0.0.1'
+  USERNAME: 'root'
+  PASSWORD: ''
   DATABASE: 'payment_api'
 
 jobs:
