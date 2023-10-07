@@ -15,10 +15,10 @@ $config = ORMSetup::createAnnotationMetadataConfiguration(
 
 $connection = DriverManager::getConnection([
     'driver' => 'pdo_mysql',
-    'host' => $_ENV['HOST'],
-    'user' => $_ENV['USERNAME'],
-    'dbname' => $_ENV['DATABASE'],
-    'password' => $_ENV['PASSWORD'],
+    'host' => $_ENV['HOST'] ?? "127.0.0.1",
+    'user' => $_ENV['USERNAME'] ?? "root",
+    'dbname' => $_ENV['DATABASE'] ?? "payment_api",
+    'password' => $_ENV['PASSWORD'] ?? "",
 ], $config);
 
 
