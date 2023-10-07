@@ -64,4 +64,4 @@ jobs:
         run: php bin/doctrine orm:schema-tool:update --force
 
       - name: Run PHPUnit Tests
-        run: phpunit
+        run: composer test
