@@ -7,8 +7,10 @@ on:
       - main
 env:
   # Setting an environment variable with the value of a configuration variable
-  ENV_FILE: ${{ vars.ENV_FILE}}
-
+  HOST:  ${{ secrets.HOST }}
+  USERNAME: ${{ secrets.USER }}
+  PASSWORD:  ${{ secrets.PASSWORD }}
+  DATABASE: 'payment_api'
 jobs:
   phpunit:
     runs-on: ubuntu-latest
@@ -37,10 +39,13 @@ jobs:
         run: composer install
         
       - name: Set up environment variables
-        run: echo "${{ vars.ENV_FILE }}" > .env
-        
+        run: | 
+           echo "HOST=${{ env.HOST }}" > .env; 
+           echo "DATABASE=${{ env.DATABASE }}" > .env; 
+           echo "USERNAME=${{ env.USER }}" > .env; 
+           echo "PASSWORD=${{ env.PASSWORD }}" > .env; 
       - name: Show environment variables
-        run: cat "${{ vars.ENV_FILE }}"
+        run: cat  .env
         
       - name: Wait for MySQL to start
         run: |
