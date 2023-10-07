@@ -13,8 +13,8 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root_password
-          MYSQL_DATABASE: test_database
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_DATABASE: payment_api
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -31,7 +31,10 @@ jobs:
 
       - name: Install Composer Dependencies
         run: composer install
-
+        
+      - name: Set up environment variables
+        run: echo "$ENV_FILE_CONTENTS" > .env
+        
       - name: Wait for MySQL to start
         run: |
           echo "Waiting for MySQL to start..."
