@@ -42,10 +42,10 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "HOST=${HOST}" >> .env
-          echo "DATABASE=${DATABASE}" >> .env
-          echo "USERNAME=${USERNAME}" >> .env
-          echo "PASSWORD=${PASSWORD}" >> .env
+          echo "HOST=$HOST" >> .env
+          echo "DATABASE=$DATABASE" >> .env
+          echo "USERNAME=$USERNAME" >> .env
+          echo "PASSWORD=$PASSWORD" >> .env
 
       - name: Show environment variables
         run: cat .env
