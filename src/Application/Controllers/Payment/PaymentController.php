@@ -17,9 +17,12 @@ use Psr\Log\LoggerInterface;
 class PaymentController
 {
     protected static $logger;
+    protected static $entityManager;
 
-    public function __construct($logger)
+
+    public function __construct($entityManager, $logger)
     {
+        self::$entityManager = $entityManager;
         self::$logger = $logger;
     }
 
@@ -27,9 +30,25 @@ class PaymentController
     {
         return function (Request $req, Response $res): Response {
             try {
-                $entityManager = $this->get('doctrine');
-                $payment = $entityManager->getRepository(Payment::class);
+                $payment = self::$entityManager->getRepository(Payment::class);
                 $data = $payment->findAll();
+                
+                $payload = json_encode(array_map(fn($pmnt) => (array) $pmnt,$data));
+                $res->getBody()->write($payload);
+                return $res->withHeader('Content-Type', 'application/json');
+            } catch (\Throwable $e) {
+                PaymentController::$logger->error("request to /v1/payments " . $e->getMessage());
+                $res->getBody()->write(json_encode(['error' => $e->getMessage()]));
+                return $res->withStatus(500)->withHeader('Content-Type', 'application/json');
+            }
+        };
+    }
+    public function create(): callable
+    {
+        return function (Request $req, Response $res): Response {
+            try {
+                $entityManager = $this->get('doctrine');
+    
                 $payment = new Payment();
                 $payment->setDescription("daasdas");
                 $payment->setAmount(2000);
@@ -37,11 +56,10 @@ class PaymentController
                 $payment->setFromCustomer(1);
                 $payment->setToCustomer(2);
             
-                // Persist the Payment entity to the database
                 $entityManager->persist($payment);
-                $entityManager->flush(); // Save changes to the database
+                $entityManager->flush();
             
-                $payload = json_encode($data);
+                $payload = json_encode(['Created new payment entry']);
                 $res->getBody()->write($payload);
 
                 return $res->withHeader('Content-Type', 'application/json');
@@ -52,6 +70,5 @@ class PaymentController
             }
         };
     }
-
  
 }

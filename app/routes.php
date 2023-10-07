@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    $paymentControlller = new PaymentController($app->getContainer()->get(LoggerInterface::class));
+    $paymentControlller = new PaymentController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
     $docsController = new DocsController;
     $AuthController = new AuthController;
 

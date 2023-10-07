@@ -8,28 +8,27 @@ $dotenv->load();
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use App\Application\Controllers\Movie\MovieController;
+use App\Application\Controllers\Payment\PaymentController;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
-use PDO;
 use Psr\Log\LoggerInterface;
+
+use Doctrine\ORM\EntityManager;
 
 class MovieControllerTest extends TestCase
 {
-    protected PDO $db;
     protected LoggerInterface $logger;
-
+    protected EntityManager $doctrine;
     protected function setUp(): void
     {
         $_ENV["environment"] = 'test';
         parent::setUp();
-        $this->db = new PDO("mysql:host=" . $_ENV["HOST"] . ";dbname=" . $_ENV["DATABASE"] . ";charset=utf8mb4", $_ENV["USERNAME"], $_ENV["PASSWORD"]);
-
-
-
+        
+        $doctrine = require __DIR__ . "/../../../config/doctrine_test.php";
         $logger = new Logger("testing_log");
 
         $processor = new UidProcessor();
@@ -39,11 +38,12 @@ class MovieControllerTest extends TestCase
         $logger->pushHandler($handler);
 
         $this->logger = $logger;
+        $this->doctrine = $doctrine;
     }
     public function testIndex()
     {
 
-        $controller = new PaymentController($this->db, $this->logger);
+        $controller = new PaymentController($this->doctrine, $this->logger);
         $request = $this->createMock(Request::class);
         $response = new Response();
 
