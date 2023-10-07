@@ -45,15 +45,10 @@ jobs:
           echo "HOST=$HOST" >> .env
           echo "DATABASE=$DATABASE" >> .env
           echo "USERNAME=$USERNAME" >> .env
-          echo "PASSWORD=$PASSWORD" >> .env
-
-      - name: Show environment variables
-        run: cat .env
-        
-      - name: Show path and ls
-        run: |
-          pwd
-          ls -la
+      
+      - name: change .env file permissions
+        run: chmod 777 .env
+      
           
       - name: Wait for MySQL to start
         run: |
