@@ -43,7 +43,7 @@ jobs:
           echo "MySQL is ready!"
 
       - name: Run Database Migrations (if applicable)
-        run: php artisan migrate --force
+        run: php bin/doctrine orm:schema-tool:update --force
 
       - name: Run PHPUnit Tests
         run: phpunit
