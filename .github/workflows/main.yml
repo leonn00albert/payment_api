@@ -5,6 +5,14 @@ on:
     branches:
       - dev
       - main
+
+env:
+  # Setting environment variables with the values of secrets
+  HOST: '127.0.0.1'
+  USERNAME: 'root'
+  PASSWORD: ''
+  DATABASE: 'payment_api'
+
 jobs:
   phpunit:
     runs-on: ubuntu-latest
@@ -13,8 +21,8 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root_password
-          MYSQL_DATABASE: test_database
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: payment_api
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -32,6 +40,16 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install
 
+      - name: Set up environment variables
+        run: |
+          echo "HOST=$HOST" >> .env
+          echo "DATABASE=$DATABASE" >> .env
+          echo "USERNAME=$USERNAME" >> .env
+      
+      - name: change .env file permissions
+        run: chmod 777 .env
+      
+          
       - name: Wait for MySQL to start
         run: |
           echo "Waiting for MySQL to start..."
@@ -43,8 +61,7 @@ jobs:
           echo "MySQL is ready!"
 
       - name: Run Database Migrations (if applicable)
-        run: php artisan migrate --force
+        run: php bin/doctrine orm:schema-tool:update --force
 
       - name: Run PHPUnit Tests
-        run: phpunit
-
+        run: composer test
