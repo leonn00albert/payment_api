@@ -5,6 +5,10 @@ on:
     branches:
       - dev
       - main
+env:
+  # Setting an environment variable with the value of a configuration variable
+  ENV_FILE: ${{ vars.ENV_FILE}}
+
 jobs:
   phpunit:
     runs-on: ubuntu-latest
