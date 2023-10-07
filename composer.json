@@ -36,7 +36,6 @@
         "php-di/php-di": "^6.4",
         "slim/psr7": "^1.6",
         "slim/slim": "^4.12",
-        "slimphp/slim-doctrine-orm": "^1.4",
         "vlucas/phpdotenv": "^5.5",
         "zircote/swagger-php": "^4.7"
     },
