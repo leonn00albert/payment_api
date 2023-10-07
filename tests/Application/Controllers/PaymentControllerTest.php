@@ -28,7 +28,7 @@ class MovieControllerTest extends TestCase
         $_ENV["environment"] = 'test';
         parent::setUp();
         
-        $doctrine = require __DIR__ . "/../../../config/doctrine_test.php";
+        $doctrine = require __DIR__ . "/../../../config/doctrine.php";
         $logger = new Logger("testing_log");
 
         $processor = new UidProcessor();
