@@ -3,10 +3,12 @@ name: PHPStan Scan
 on:
   push:
     branches:
-      - master  # Adjust this to match the main branch name of your repository
+      - main  # Adjust this to match the main branch name of your repository
+      
   pull_request:
     branches:
-      - master  # Adjust this to match the main branch name of your repository
+      - main  
+      - dev  
 
 jobs:
   phpstan:
