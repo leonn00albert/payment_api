@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    $paymentControlller = new PaymentController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
+    $paymentController = new PaymentController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
     $docsController = new DocsController;
     $AuthController = new AuthController;
 
@@ -27,15 +27,11 @@ return function (App $app) {
         $response->getBody()->write('Hello world!');
         return $response;
     });
-    $app->get('/v1/payments', $paymentControlller->index());
 
-    $app->group("/v1/customers",function ($group) {
-        $group->get('/v1/customers', 'Controller');
-        $group->post('/v1/customers','Controller');
-        $group->delete('/v1/customers/{id:[0-9]+}', 'Controller');
-        $group->put('/v1/customers/{id:[0-9]+}', 'Controller');
-        $group->get('/v1/customers/deactivate/{id:[0-9]+}','Controller');
-        $group->get('/v1/customers/reactivate/{id:[0-9]+}', 'Controller');
+
+    $app->group("/v1",function ($group) use ($paymentController) {
+        $group->get('/payments', $paymentController->read());
+        $group->post('/payments', $paymentController->create());
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
