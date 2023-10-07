@@ -37,10 +37,10 @@ jobs:
         run: composer install
         
       - name: Set up environment variables
-        run: echo "$ENV_FILE" > .env
+        run: echo "${{ vars.ENV_FILE }}" > .env
         
       - name: Show environment variables
-        run: echo "$ENV_FILE" 
+        run: cat "${{ vars.ENV_FILE }}"
         
       - name: Wait for MySQL to start
         run: |
