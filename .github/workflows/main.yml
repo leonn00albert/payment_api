@@ -1,0 +1,50 @@
+name: PHPUnit with Database
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: test_database
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          extensions: mbstring, pdo, pdo_mysql
+
+      - name: Install Composer Dependencies
+        run: composer install
+
+      - name: Wait for MySQL to start
+        run: |
+          echo "Waiting for MySQL to start..."
+          until nc -zv 127.0.0.1 3306
+          do
+            echo "MySQL is not ready yet, retrying in 5 seconds..."
+            sleep 5
+          done
+          echo "MySQL is ready!"
+
+      - name: Run Database Migrations (if applicable)
+        run: php artisan migrate --force
+
+      - name: Run PHPUnit Tests
+        run: phpunit
+
