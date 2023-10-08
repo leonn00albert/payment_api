@@ -34,9 +34,15 @@ return function (App $app) {
     $app->group("/v1",function ($group) use ($paymentController, $customerController) {
         $group->get('/payments', $paymentController->read());
         $group->post('/payments', $paymentController->create());
+        $group->post('/payments/{id:[0-9]+}', $paymentController->update());
+        $group->post('/payments/{id:[0-9]+}', $paymentController->delete());
 
         $group->get('/customers', $customerController->read());
         $group->post('/customers', $customerController->create());
+        $group->put('customers/{id:[0-9]+}', $customerController->update());
+        $group->delete('customers/{id:[0-9]+}', $customerController->delete());
+        $group->get('customers/deactivate/{id:[0-9]+}', $customerController->deactivate());
+        $group->get('customers/reactivate/{id:[0-9]+}', $customerController->reactivate());
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
