@@ -11,3 +11,40 @@
 [2023-10-07T15:54:22.267127+00:00] testing_log.ERROR: request to: PUT /v1/payments - Cannot use object of type Slim\Psr7\Response as array [] {"uid":"2753a89"}
 [2023-10-07T15:55:33.575803+00:00] testing_log.ERROR: request to: PUT /v1/payments - Cannot use object of type Slim\Psr7\Response as array [] {"uid":"4d71aef"}
 [2023-10-07T15:59:35.689064+00:00] testing_log.ERROR: request to: PUT /v1/payments - Invalid HTTP status code. [] {"uid":"798d8cc"}
+[2023-10-08T12:18:28.692469+00:00] testing_log.ERROR: request to: GET /v1/payments - An exception occurred in the driver: SQLSTATE[HY000] [2002] Connection refused [] {"uid":"ebcd672"}
+[2023-10-08T12:18:28.698992+00:00] testing_log.ERROR: request to: POST /v1/payments - An exception occurred in the driver: SQLSTATE[HY000] [2002] Connection refused [] {"uid":"184f017"}
+[2023-10-08T12:19:35.427019+00:00] testing_log.ERROR: request to: GET /v1/payments - Class 'App\Application\Controllers\Customer\Customer' does not exist [] {"uid":"62f9a72"}
+[2023-10-08T12:19:35.438743+00:00] testing_log.ERROR: request to: POST /v1/payments - An exception occurred in the driver: SQLSTATE[HY000] [2002] Connection refused [] {"uid":"1330934"}
+[2023-10-08T12:19:57.319269+00:00] testing_log.ERROR: request to: GET /v1/payments - Class 'App\Application\Controllers\Customer\Customer' does not exist [] {"uid":"b85f909"}
+[2023-10-08T13:01:40.528801+00:00] testing_log.ERROR: request to: POST /v1/payments - Undefined array key "amount" [] {"uid":"32ac457"}
+[2023-10-08T13:02:14.876950+00:00] testing_log.ERROR: request to: POST /v1/payments - Undefined array key "amount" [] {"uid":"3eeed0e"}
+[2023-10-08T13:04:46.910237+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"a0f4b34"}
+[2023-10-08T13:17:21.525795+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"f024c34"}
+[2023-10-08T13:18:45.005706+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'active' cannot be null [] {"uid":"e93b0e1"}
+[2023-10-08T13:21:09.626092+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"b9f88ab"}
+[2023-10-08T13:22:49.583400+00:00] testing_log.ERROR: request to:  - Undefined array key 1 [] {"uid":"fdb8407"}
+[2023-10-08T13:23:47.276513+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"34332b5"}
+[2023-10-08T13:23:47.278751+00:00] testing_log.ERROR: request to:  - Undefined array key 1 [] {"uid":"166792e"}
+[2023-10-08T13:25:00.176191+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"ae2db29"}
+[2023-10-08T13:25:00.178170+00:00] testing_log.ERROR: request to:  - Undefined array key 1 [] {"uid":"c8a134f"}
+[2023-10-08T13:25:18.633940+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"49ed972"}
+[2023-10-08T13:25:18.635943+00:00] testing_log.ERROR: request to:  - Undefined array key 1 [] {"uid":"772dff0"}
+[2023-10-08T13:25:35.113998+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"fae02d7"}
+[2023-10-08T13:25:35.118091+00:00] testing_log.ERROR: request to:  - The identifier id is missing for a query of App\Application\Models\Customer [] {"uid":"3869709"}
+[2023-10-08T13:30:02.213127+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"ab0352c"}
+[2023-10-08T13:30:02.215271+00:00] testing_log.ERROR: request to:  - Context: Using short namespace alias "UserBundle:User" when calling Doctrine\ORM\EntityManager::getRepository Problem: Feature was deprecated in doctrine/persistence 2.x and is not supported by installed doctrine/persistence:3.x Solution: See the doctrine/deprecations logs for new alternative approaches. [] {"uid":"e8ba4ef"}
+[2023-10-08T13:30:20.298612+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"d825592"}
+[2023-10-08T13:30:20.302725+00:00] testing_log.ERROR: request to:  - EntityManager#remove() expects parameter 1 to be an entity object, array given. [] {"uid":"adfc11d"}
+[2023-10-08T13:31:11.589142+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"9ac1615"}
+[2023-10-08T13:51:04.130226+00:00] testing_log.ERROR: request to: PUT /v1/payments - Undefined array key "id" [] {"uid":"4f403bf"}
+[2023-10-08T13:51:04.136285+00:00] testing_log.ERROR: request to:  - Class 'App\Application\Controllers\Payment\Customer' does not exist [] {"uid":"15fcf46"}
+[2023-10-08T13:55:06.427410+00:00] testing_log.ERROR: request to: PUT /v1/payments - Undefined array key "id" [] {"uid":"ce214ef"}
+[2023-10-08T13:56:12.063133+00:00] testing_log.ERROR: request to: PUT /v1/payments - Undefined array key "id" [] {"uid":"daff63b"}
+[2023-10-08T13:57:03.315809+00:00] testing_log.ERROR: request to: PUT /v1/payments - Undefined array key "id" [] {"uid":"2a47b3d"}
+[2023-10-08T14:04:06.776667+00:00] testing_log.ERROR: request to: POST /v1/customers - syntax error, unexpected token ";" [] {"uid":"9d4bfd8"}
+[2023-10-08T14:08:52.194238+00:00] testing_log.ERROR: request to: POST /v1/customers - syntax error, unexpected token ";" [] {"uid":"521a031"}
+[2023-10-08T14:23:13.034425+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :{"name":"hello"} [] {"uid":"bed900c"}
+[2023-10-08T14:25:44.106608+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"07895ba"}
+[2023-10-08T14:26:36.424935+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"d4114f3"}
+[2023-10-08T14:26:48.826026+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"5492a01"}
+[2023-10-08T14:27:27.010955+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"76b67e4"}

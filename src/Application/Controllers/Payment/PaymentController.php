@@ -59,7 +59,7 @@ class PaymentController extends Controller implements CrudInterface
     
                 $postData = json_decode($rawJson, true);
     
-                $paymentId = (int) $args['id'];
+                $paymentId = (int) $args[0];
                 $payment = self::$entityManager->getRepository(Payment::class)->find($paymentId);
     
                 if (!$payment) {
@@ -71,10 +71,16 @@ class PaymentController extends Controller implements CrudInterface
                 if (!$validatedData) {
                     return Controller::jsonResponse($res, ['error' => 'Invalid input data'], 400);
                 }
-    
-                $payment->setDescription($validatedData['description']);
-                $payment->setAmount($validatedData['amount']);
-                $payment->setToCustomer($validatedData['recipiant']);
+                if(isset($validatedData['description'])) {
+                    $payment->setDescription($validatedData['description']);
+                }
+                if(isset($validatedData['recipiant'])) {
+                    $payment->setToCustomer($validatedData['recipiant']);
+                }
+                if(isset($validatedData['amount'])) {
+                    $payment->setAmount($validatedData['amount']);
+                }
+        
     
                 self::$entityManager->flush();
     
@@ -90,17 +96,23 @@ class PaymentController extends Controller implements CrudInterface
     
     public function delete(): callable
     {
-        return function (Request $req, Response $res): Response {
+        return function (Request $req, Response $res, array $args): Response {
             try {
-                $response = $this->processPaymentRequest($req);
-                return $this->jsonResponse($res,$response['body'],$response['statusCode']);
+                if(is_numeric($args[0])) {
+                    $customer = PaymentController::$entityManager->find(Payment::class,$args[0]);
+                }
+                if ($customer) {
+                    PaymentController::$entityManager->remove($customer);
+                    PaymentController::$entityManager->flush();
+                }
+                $response = ['body' => ['message' => 'Payment deleted successfully.'], 'statusCode' => 200];
+                return Controller::jsonResponse($res,$response['body'],$response['statusCode']);
             } catch (\Throwable $e) {
-                Controller::logError($e);
-                Controller::jsonResponse($res,['error' => $e->getMessage()],500);
+                Controller::logError($e, "DELETE /v1/payments/" . $args[0]);
+                return Controller::jsonResponse($res,['error' => $e->getMessage()],500);
             }
         };
     }
-
 
     private function processPaymentRequest(Request $req, ?bool $update = null): array
     {

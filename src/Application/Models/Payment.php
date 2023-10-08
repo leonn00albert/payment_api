@@ -1,5 +1,5 @@
 <?php
-// src/Entity/Payment.php
+
 namespace App\Application\Models;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Payment
 {
 
-    
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")

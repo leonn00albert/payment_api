@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Interfaces;
+namespace App\Application\Controllers\Interfaces;
 
 /**
  * Interface for CRUD operations with activation and deactivation.

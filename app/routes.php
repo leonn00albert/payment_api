@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Application\Controllers\Auth\AuthController;
+use App\Application\Controllers\Customer\CustomerController;
 use App\Application\Controllers\Docs\DocsController;
-use App\Application\Controllers\Movie\MovieController;
 use App\Application\Controllers\Payment\PaymentController;
 use App\Utils\SeedMovies;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -16,6 +16,8 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
     $paymentController = new PaymentController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
+    $customerController = new CustomerController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
+
     $docsController = new DocsController;
     $AuthController = new AuthController;
 
@@ -29,9 +31,12 @@ return function (App $app) {
     });
 
 
-    $app->group("/v1",function ($group) use ($paymentController) {
+    $app->group("/v1",function ($group) use ($paymentController, $customerController) {
         $group->get('/payments', $paymentController->read());
         $group->post('/payments', $paymentController->create());
+
+        $group->get('/customers', $customerController->read());
+        $group->post('/customers', $customerController->create());
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
@@ -39,21 +44,5 @@ return function (App $app) {
     $app->get('/docs', $docsController->index());
 
 
-    $app->get('/seed', function (Request $request, Response $response) {
-        $seeder = new SeedMovies();
-        $seed_data = $seeder->seed();
-        $db = $this->get(PDO::class);
-        $db = $this->get(PDO::class);
 
-        foreach ($seed_data as $movie) {
-            $sql = "INSERT INTO movies (uid, title, year, released, runtime, overview, genre, director, actors, country, poster, imdb_id, imdb, type) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            $stmt = $db->prepare($sql);
-            $stmt->execute([]);
-        };
-
-
-        return $response->withHeader('Content-Type', 'application/json');
-    });
 };
