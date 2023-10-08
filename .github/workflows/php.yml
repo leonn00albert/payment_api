@@ -35,5 +35,8 @@ jobs:
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
+    - name: Run PHP Code Fix
+      run: vendor/bin/phpcbf --standard=PSR2 src/
+
     - name: Run PHP Code Sniffer
-      run: vendor/bin/phpcs
+      run: vendor/bin/phpcs --standard=PSR2 src/
