@@ -34,8 +34,8 @@ return function (App $app) {
     $app->group("/v1",function ($group) use ($paymentController, $customerController) {
         $group->get('/payments', $paymentController->read());
         $group->post('/payments', $paymentController->create());
-        $group->post('/payments/{id:[0-9]+}', $paymentController->update());
-        $group->post('/payments/{id:[0-9]+}', $paymentController->delete());
+        $group->put('/payments/{id:[0-9]+}', $paymentController->update());
+        $group->delete('/payments/{id:[0-9]+}', $paymentController->delete());
 
         $group->get('/customers', $customerController->read());
         $group->post('/customers', $customerController->create());
