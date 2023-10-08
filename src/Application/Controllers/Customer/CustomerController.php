@@ -32,7 +32,7 @@ class CustomerController extends Controller implements CrudInterface,Activatable
             
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers");
-               Controller::jsonResponse($res,['error' => $e->getMessage()],500);
+               return Controller::jsonResponse($res,['error' => $e->getMessage()],500);
             }
         };
     }
@@ -44,19 +44,19 @@ class CustomerController extends Controller implements CrudInterface,Activatable
                 $rawJson = $req->getBody()->getContents();
 
                 if (empty($rawJson)) {
-                    return ['body' => ['error' => 'Invalid JSON data'], 'statusCode' => 400];
+                    $response = ['body' => ['error' => 'Invalid JSON data'], 'statusCode' => 400];
                 }
         
                 $postData = json_decode($rawJson, true);
         
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    return ['body' => ['error' => 'Invalid JSON format'], 'statusCode' => 400];
+                    $response = ['body' => ['error' => 'Invalid JSON format'], 'statusCode' => 400];
                 }
         
                 $validatedData = CustomerSanitizer::sanitize($postData);
         
                 if (!$validatedData) {
-                    return ['body' => ['error' => 'Invalid input data'], 'statusCode' => 400];
+                    $response = ['body' => ['error' => 'Invalid input data'], 'statusCode' => 400];
                 }
         
                 $entityManager = self::$entityManager;
@@ -143,11 +143,15 @@ class CustomerController extends Controller implements CrudInterface,Activatable
                     $customer = CustomerController::$entityManager->getRepository(Customer::class)->findOneBy(['email' => $args[0]]);
 
                 }
-                if ($customer) {
+                if (isset($customer)) {
                     CustomerController::$entityManager->remove($customer);
                     CustomerController::$entityManager->flush();
+                    $response = ['body' => ['message' => 'Customer deleted successfully.'], 'statusCode' => 200];
+
+                } else {
+                    $response = ['body' => ['error' => 'Customer not found'], 'statusCode' => 404];
+
                 }
-                $response = ['body' => ['message' => 'Customer deleted successfully.'], 'statusCode' => 200];
                 return Controller::jsonResponse($res,$response['body'],$response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "DELETE /v1/customers/" . $args[0]);
@@ -165,11 +169,16 @@ class CustomerController extends Controller implements CrudInterface,Activatable
                     $customer = CustomerController::$entityManager->getRepository(Customer::class)->findOneBy(['email' => $args[0]]);
 
                 }
-                if ($customer) {
+                if (isset($customer)) {
                     $customer->setActive(true);
                     CustomerController::$entityManager->flush();
+                    $response = ['body' => ['message' => 'Customer deleted successfully.'], 'statusCode' => 200];
+
                 }
-                $response = ['body' => ['message' => 'Customer activated successfully.'], 'statusCode' => 200];
+               else {
+                    $response = ['body' => ['error' => 'Customer not found'], 'statusCode' => 404];
+
+                }
                 return Controller::jsonResponse($res,$response['body'],$response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers/reactivate" . $args[0]);
@@ -188,11 +197,16 @@ class CustomerController extends Controller implements CrudInterface,Activatable
                     $customer = CustomerController::$entityManager->getRepository(Customer::class)->findOneBy(['email' => $args[0]]);
 
                 }
-                if ($customer) {
+                if (isset($customer)) {
                     $customer->setActive(false);
                     CustomerController::$entityManager->flush();
+                    $response = ['body' => ['message' => 'Customer deactivated successfully.'], 'statusCode' => 200];
+
                 }
-                $response = ['body' => ['message' => 'Customer deactivated successfully.'], 'statusCode' => 200];
+                else {
+                    $response = ['body' => ['error' => 'Customer not found'], 'statusCode' => 404];
+
+                }
                 return Controller::jsonResponse($res,$response['body'],$response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers/deactivate" . $args[0]);

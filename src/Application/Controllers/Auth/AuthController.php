@@ -49,10 +49,7 @@ class AuthController
                 $email = filter_var($postData["email"], FILTER_VALIDATE_EMAIL) ? $postData["email"] : throw new Exception("Email is not valid");
                 $apiKey = AuthController::generateApiKey();
 
-                User::register($this->get(PDO::class), [
-                    "email" => $email,
-                    "api_key" => $apiKey
-                ]);
+         
                 AuthController::addToAllowList($apiKey);
                 $res->getBody()->write(json_encode(['message' => 'User registered successfully', 'apiKey' => $apiKey]));
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');

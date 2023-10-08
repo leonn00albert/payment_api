@@ -31,7 +31,7 @@ class PaymentController extends Controller implements CrudInterface
             
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/payments");
-               Controller::jsonResponse($res,['error' => $e->getMessage()],500);
+               return Controller::jsonResponse($res,['error' => $e->getMessage()],500);
             }
         };
     }
@@ -43,7 +43,7 @@ class PaymentController extends Controller implements CrudInterface
                 return  Controller::jsonResponse($res,$response['body'],$response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "POST /v1/payments");
-                Controller::jsonResponse($res,['error' => $e->getMessage()],500);
+                return Controller::jsonResponse($res,['error' => $e->getMessage()],500);
             }
         };
     }
@@ -99,13 +99,17 @@ class PaymentController extends Controller implements CrudInterface
         return function (Request $req, Response $res, array $args): Response {
             try {
                 if(is_numeric($args[0])) {
-                    $customer = PaymentController::$entityManager->find(Payment::class,$args[0]);
+                    $payment = PaymentController::$entityManager->find(Payment::class,$args[0]);
                 }
-                if ($customer) {
-                    PaymentController::$entityManager->remove($customer);
+                if (isset($payment)) {
+                    PaymentController::$entityManager->remove($payment);
                     PaymentController::$entityManager->flush();
+                    $response = ['body' => ['message' => 'Payment deleted successfully.'], 'statusCode' => 200];
+
+                } else {
+                    $response = ['body' => ['error' => 'Payment not found'], 'statusCode' => 404];
+
                 }
-                $response = ['body' => ['message' => 'Payment deleted successfully.'], 'statusCode' => 200];
                 return Controller::jsonResponse($res,$response['body'],$response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "DELETE /v1/payments/" . $args[0]);
