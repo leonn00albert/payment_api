@@ -52,7 +52,7 @@ class Controller
      *
      * @param \Throwable $e The exception or error to log.
      */
-    public static function logError(\Throwable $e , string $endpoint = ""): void
+    public static function logError(\Throwable $e, string $endpoint = ""): void
     {
         self::$logger->error("request to: " . $endpoint . " - " . $e->getMessage());
     }

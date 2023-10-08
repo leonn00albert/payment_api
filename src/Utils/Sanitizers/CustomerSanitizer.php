@@ -35,7 +35,7 @@ class CustomerSanitizer
             } else {
                 return false;
             }
-        } 
+        }
         if (is_null($update) || $update === false) {
             $requiredFields = ['name', 'email'];
             foreach ($requiredFields as $field) {

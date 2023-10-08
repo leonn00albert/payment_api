@@ -49,7 +49,7 @@ class AuthController
                 $email = filter_var($postData["email"], FILTER_VALIDATE_EMAIL) ? $postData["email"] : throw new Exception("Email is not valid");
                 $apiKey = AuthController::generateApiKey();
 
-         
+
                 AuthController::addToAllowList($apiKey);
                 $res->getBody()->write(json_encode(['message' => 'User registered successfully', 'apiKey' => $apiKey]));
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');
@@ -66,7 +66,7 @@ class AuthController
      *
      * @return string The generated API key.
      */
-    static function generateApiKey($length = 32): string
+    public static function generateApiKey($length = 32): string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $apiKey = '';
@@ -87,7 +87,7 @@ class AuthController
      *
      * @return string A message indicating whether the API key was added or already exists in the allow list.
      */
-    static function addToAllowList(string $api_key): string
+    public static function addToAllowList(string $api_key): string
     {
         $jsonFilePath = './api_keys.json';
 
@@ -138,7 +138,7 @@ class AuthController
      *
      * @return bool True if the API key is allowed, false otherwise.
      */
-    static function checkIfKeyIsAllowed(string $api_key): bool
+    public static function checkIfKeyIsAllowed(string $api_key): bool
     {
         $jsonFilePath = './api_keys.json';
 

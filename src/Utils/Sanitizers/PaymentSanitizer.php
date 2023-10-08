@@ -15,9 +15,9 @@ class PaymentSanitizer
     {
         $validatedData = [];
         if (isset($data['description'])) {
-            if (is_string($data['description']))
+            if (is_string($data['description'])) {
                 $validatedData['description'] = htmlspecialchars($data['description']);
-            else {
+            } else {
                 return false;
             }
         }
