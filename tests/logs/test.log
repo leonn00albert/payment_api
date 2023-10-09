@@ -48,3 +48,12 @@
 [2023-10-08T14:26:36.424935+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"d4114f3"}
 [2023-10-08T14:26:48.826026+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"5492a01"}
 [2023-10-08T14:27:27.010955+00:00] testing_log.ERROR: request to: PUT /v1/customers - Invalid input data :false [] {"uid":"76b67e4"}
+[2023-10-09T14:28:49.162581+00:00] testing_log.ERROR: request to: GET /v1/customers - Class 'App\Application\Controllers\Method\Customer' does not exist [] {"uid":"4a0aa34"}
+[2023-10-09T14:28:49.165475+00:00] testing_log.ERROR: request to: POST /v1/customers - Class "App\Application\Controllers\Method\Customer" not found [] {"uid":"bf0af64"}
+[2023-10-09T14:31:09.281985+00:00] testing_log.ERROR: request to: GET /v1/methods - Class 'App\Application\Models\Method' does not exist [] {"uid":"02f4e38"}
+[2023-10-09T14:31:09.286345+00:00] testing_log.ERROR: request to: POST /v1/customers - Class "App\Application\Controllers\Method\Customer" not found [] {"uid":"93742d3"}
+[2023-10-09T14:32:04.130909+00:00] testing_log.ERROR: request to: POST /v1/customers - Class "App\Application\Controllers\Method\Customer" not found [] {"uid":"b6a8858"}
+[2023-10-09T14:38:24.276900+00:00] testing_log.ERROR: request to: PUT /v1/methods - Undefined variable $customer [] {"uid":"0bf6cbe"}
+[2023-10-09T14:38:56.735530+00:00] testing_log.ERROR: request to: PUT /v1/methods - Undefined array key "description" [] {"uid":"454fd45"}
+[2023-10-09T14:41:57.931218+00:00] testing_log.ERROR: request to: GET /v1/customers/deactivate7 - Class "App\Application\Controllers\Method\CustomerController" not found [] {"uid":"6dfb7b1"}
+[2023-10-09T14:41:57.936825+00:00] testing_log.ERROR: request to: GET /v1/customers/reactivate7 - Class "App\Application\Controllers\Method\CustomerController" not found [] {"uid":"0e56080"}

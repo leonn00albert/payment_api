@@ -35,7 +35,7 @@ return function (App $app) {
         $group->get('/payments', $paymentController->read());
         $group->post('/payments', $paymentController->create());
         $group->put('/payments/{id:[0-9]+}', $paymentController->update());
-        $group->delete('/payments/{id:[0-9]+}', $paymentController->delete());
+        $group->delete ('/payments/{id:[0-9]+}', $paymentController->delete());
 
         $group->get('/customers', $customerController->read());
         $group->post('/customers', $customerController->create());
@@ -43,6 +43,13 @@ return function (App $app) {
         $group->delete('customers/{id:[0-9]+}', $customerController->delete());
         $group->get('customers/deactivate/{id:[0-9]+}', $customerController->deactivate());
         $group->get('customers/reactivate/{id:[0-9]+}', $customerController->reactivate());
+
+        $group->get('/methods', $customerController->read());
+        $group->post('/methods', $customerController->create());
+        $group->put('methods/{id:[0-9]+}', $customerController->update());
+        $group->delete('methods/{id:[0-9]+}', $customerController->delete());
+        $group->get('methods/deactivate/{id:[0-9]+}', $customerController->deactivate());
+        $group->get('methods/reactivate/{id:[0-9]+}', $customerController->reactivate());
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
