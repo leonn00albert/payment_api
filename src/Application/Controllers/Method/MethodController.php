@@ -53,8 +53,8 @@ class MethodController extends Controller implements CrudInterface, ActivatableI
 
                 $entityManager = self::$entityManager;
                 $method = new Method();
-                $method->setName(htmlspecialchars($postData['name']) ?? "");
-                $method->setDescription(htmlspecialchars($postData['description'])?? "");
+                $method->setName(htmlspecialchars($postData['name']));
+                $method->setDescription(htmlspecialchars($postData['description']));
                 $method->setActive(true);
   
          
@@ -91,11 +91,11 @@ class MethodController extends Controller implements CrudInterface, ActivatableI
 
 
                 if (isset($postData['name'])) {
-                    $method->setName(htmlspecialchars($postData['name'])?? "");
+                    $method->setName(htmlspecialchars($postData['name']));
                 }
             
                 if (isset($postData['description'])) {
-                    $method->setDescription(htmlspecialchars($postData['description'])?? "");
+                    $method->setDescription(htmlspecialchars($postData['description']));
                 }
 
 

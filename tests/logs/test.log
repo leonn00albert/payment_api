@@ -57,3 +57,4 @@
 [2023-10-09T14:38:56.735530+00:00] testing_log.ERROR: request to: PUT /v1/methods - Undefined array key "description" [] {"uid":"454fd45"}
 [2023-10-09T14:41:57.931218+00:00] testing_log.ERROR: request to: GET /v1/customers/deactivate7 - Class "App\Application\Controllers\Method\CustomerController" not found [] {"uid":"6dfb7b1"}
 [2023-10-09T14:41:57.936825+00:00] testing_log.ERROR: request to: GET /v1/customers/reactivate7 - Class "App\Application\Controllers\Method\CustomerController" not found [] {"uid":"0e56080"}
+[2023-10-10T15:33:28.683692+00:00] testing_log.ERROR: request to: POST /v1/customers - An exception occurred while executing a query: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@email.com' for key 'UNIQ_62534E21E7927C74' [] {"uid":"236b206"}

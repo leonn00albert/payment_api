@@ -10,6 +10,7 @@ use App\Application\Controllers\Controller;
 use App\Application\Controllers\Interfaces\ActivatableInterface;
 use App\Application\Controllers\Interfaces\CrudInterface;
 use App\Application\Models\Customer;
+use App\Utils\Errors\Errors;
 use App\Utils\Sanitizers\CustomerSanitizer;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -31,7 +32,7 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
                 return Controller::jsonResponse($res, $payload);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers");
-                return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500);
+                return Controller::jsonResponse($res, ['error' => Errors::handleErrorCode($e->getCode())], 500);
             }
         };
     }
@@ -76,7 +77,7 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
                 return  Controller::jsonResponse($res, $response['body'], $response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "POST /v1/customers");
-                return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500);
+                return Controller::jsonResponse($res, ['error' => Errors::handleErrorCode($e->getCode())], 500);
             }
         };
     }
@@ -121,8 +122,7 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
                 return Controller::jsonResponse($res, ['message' => 'Customer updated successfully'], 200);
             } catch (\Throwable $e) {
                 Controller::logError($e, "PUT /v1/customers");
-                return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500)
-                    ->withHeader('Content-Type', 'application/json'); // Set the content type header
+                return Controller::jsonResponse($res, ['error' => Errors::handleErrorCode($e->getCode())], 500);
             }
         };
     }
@@ -147,7 +147,7 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
                 return Controller::jsonResponse($res, $response['body'], $response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "DELETE /v1/customers/" . $args[0]);
-                return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500);
+                return Controller::jsonResponse($res, ['error' => Errors::handleErrorCode($e->getCode())], 500);
             }
         };
     }
@@ -170,7 +170,7 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
                 return Controller::jsonResponse($res, $response['body'], $response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers/reactivate" . $args[0]);
-                return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500);
+                return Controller::jsonResponse($res, ['error' => Errors::handleErrorCode($e->getCode())], 500);
             }
         };
     }
@@ -194,7 +194,7 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
                 return Controller::jsonResponse($res, $response['body'], $response['statusCode']);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers/deactivate" . $args[0]);
-                return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500);
+                return Controller::jsonResponse($res, ['error' => Errors::handleErrorCode($e->getCode())], 500);
             }
         };
     }
