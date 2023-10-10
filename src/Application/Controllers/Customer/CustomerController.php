@@ -40,41 +40,38 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
         return function (Request $req, Response $res): Response {
             try {
                 $rawJson = $req->getBody()->getContents();
-
                 if (empty($rawJson)) {
                     $response = ['body' => ['error' => 'Invalid JSON data'], 'statusCode' => 400];
                 }
 
                 $postData = json_decode($rawJson, true);
-
-                if (json_last_error() !== JSON_ERROR_NONE) {
+                if (json_last_error() !== JSON_ERROR_NONE || is_null($postData)) {
                     $response = ['body' => ['error' => 'Invalid JSON format'], 'statusCode' => 400];
                 }
-
-                $validatedData = CustomerSanitizer::sanitize($postData);
-
+                $validatedData = isset($postData) ? CustomerSanitizer::sanitize($postData) : null;
                 if (!$validatedData) {
                     $response = ['body' => ['error' => 'Invalid input data'], 'statusCode' => 400];
+                } else {
+                    $entityManager = self::$entityManager;
+                    $customer = new Customer();
+                    $customer->setName($validatedData['name']);
+                    $customer->setEmail($validatedData['email']);
+                    $customer->setBalance($validatedData['balance'] ?? 0);
+                    $customer->setActive(true);
+                    $payload = [
+
+                        "email" => $customer->getEmail(),
+                        "name" => $customer->getName(),
+                    ];
+
+                    $secretKey =  $_ENV["JWT_SECRET"] ?? "testing_key";
+                    $customer->setJWT(JWT::encode($payload, $secretKey, 'HS256'));
+                    $entityManager->persist($customer);
+                    $entityManager->flush();
+
+
+                    $response = ['body' => ['message' => 'Customer added successfully your jwt: ' . $customer->getJwt()], 'statusCode' => 201];
                 }
-
-                $entityManager = self::$entityManager;
-                $customer = new Customer();
-                $customer->setName($validatedData['name']);
-                $customer->setEmail($validatedData['email']);
-                $customer->setBalance($validatedData['balance'] ?? 0);
-                $customer->setActive(true);
-                $payload = [
-
-                    "email" => $customer->getEmail(),
-                    "name" => $customer->getName(),
-                ];
-
-                $secretKey =  $_ENV["JWT_SECRET"] ?? "testing_key";
-                $customer->setJWT(JWT::encode($payload, $secretKey, 'HS256')) ;
-                $entityManager->persist($customer);
-                $entityManager->flush();
-
-                $response = ['body' => ['message' => 'Customer added successfully your jwt: ' . $customer->getJwt()], 'statusCode' => 201];
 
                 return  Controller::jsonResponse($res, $response['body'], $response['statusCode']);
             } catch (\Throwable $e) {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Application\Controllers\Auth\AuthController;
 use App\Application\Middleware\SessionMiddleware;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 
@@ -29,23 +31,34 @@ return function (App $app) {
 
     $AuthMiddleware = function ($request, $handler) {
         $requestUri = $request->getUri();
-        $version = $requestUri->getPath(); // Get the requested URI path
-            if (strpos($version, '/v1/') === 0) {
-            $apiKey = $request->getHeaderLine('api_key');
-    
-            if (isset($apiKey) && AuthController::checkIfKeyIsAllowed($apiKey)) {
-                return $handler->handle($request);
-            }
-    
-            $response = new \Slim\Psr7\Response();
-            $response = $response->withStatus(401);
-            $response->getBody()->write("Unauthorized! Register your email at v1/register");
-            return $response;
+        $version = $requestUri->getPath(); 
+            if (strpos($version, '/v1/') === 0) {    
+                $response = new \Slim\Psr7\Response();
+                $token = $request->getHeaderLine('jwt_token') ?? "" ;
+
+                if (empty($token)) {
+                   
+                    $response = $response->withStatus(401);
+                    $response->getBody()->write("Unauthorized! Register at /register");
+                    return $response;
+                }
+                
+                try {
+                    $secretKey =  $_ENV["JWT_SECRET"] ?? "testing_key";
+                    $decoded = JWT::decode($token, new Key($secretKey, 'HS256'));
+     
+                } catch (Exception $e) {
+                    $response = $response->withStatus(401);
+                    $response->getBody()->write("Unauthorized! Register at /register");
+                    return $response;
+                }
+            
+            
         }
     
         return $handler->handle($request);
     };
-   // $app->add($AuthMiddleware);
+    $app->add($AuthMiddleware);
     $app->add(SessionMiddleware::class);
     $app->add($LoggerMiddleware);
 };

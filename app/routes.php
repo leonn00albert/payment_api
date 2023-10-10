@@ -53,7 +53,7 @@ return function (App $app) {
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
-    $app->post('/register', $AuthController->register());
+    $app->post('/register', $customerController->create());
     $app->get('/docs', $docsController->index());
 
 
