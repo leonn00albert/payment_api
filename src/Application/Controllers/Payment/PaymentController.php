@@ -13,9 +13,8 @@ use App\Application\Models\Payment;
 use App\Utils\Sanitizers\PaymentSanitizer;
 use DateTime;
 use OpenApi\Annotations as OA;
-use Exception;
-use PDO;
-use Psr\Log\LoggerInterface;
+
+
 
 class PaymentController extends Controller implements CrudInterface
 {
