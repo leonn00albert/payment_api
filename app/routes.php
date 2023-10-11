@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Application\Controllers\Auth\AuthController;
+use App\Application\Controllers\Customer\CustomerController;
 use App\Application\Controllers\Docs\DocsController;
-use App\Application\Controllers\Movie\MovieController;
 use App\Application\Controllers\Payment\PaymentController;
 use App\Utils\SeedMovies;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -15,9 +15,10 @@ use Psr\Log\LoggerInterface;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app) {
-    $paymentControlller = new PaymentController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
+    $paymentController = new PaymentController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
+    $customerController = new CustomerController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
+
     $docsController = new DocsController;
-    $AuthController = new AuthController;
 
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         return $response;
@@ -27,37 +28,33 @@ return function (App $app) {
         $response->getBody()->write('Hello world!');
         return $response;
     });
-    $app->get('/v1/payments', $paymentControlller->index());
 
-    $app->group("/v1/customers",function ($group) {
-        $group->get('/v1/customers', 'Controller');
-        $group->post('/v1/customers','Controller');
-        $group->delete('/v1/customers/{id:[0-9]+}', 'Controller');
-        $group->put('/v1/customers/{id:[0-9]+}', 'Controller');
-        $group->get('/v1/customers/deactivate/{id:[0-9]+}','Controller');
-        $group->get('/v1/customers/reactivate/{id:[0-9]+}', 'Controller');
+    $app->post('/register', $customerController->create());
+
+    $app->group("/v1",function ($group) use ($paymentController, $customerController) {
+        $group->get('/payments', $paymentController->read());
+        $group->post('/payments', $paymentController->create());
+        $group->put('/payments/{id:[0-9]+}', $paymentController->update());
+        $group->delete ('/payments/{id:[0-9]+}', $paymentController->delete());
+
+        $group->get('/customers', $customerController->read());
+        $group->post('/customers', $customerController->create());
+        $group->put('customers/{id:[0-9]+}', $customerController->update());
+        $group->delete('customers/{id:[0-9]+}', $customerController->delete());
+        $group->get('customers/deactivate/{id:[0-9]+}', $customerController->deactivate());
+        $group->get('customers/reactivate/{id:[0-9]+}', $customerController->reactivate());
+
+        $group->get('/methods', $customerController->read());
+        $group->post('/methods', $customerController->create());
+        $group->put('methods/{id:[0-9]+}', $customerController->update());
+        $group->delete('methods/{id:[0-9]+}', $customerController->delete());
+        $group->get('methods/deactivate/{id:[0-9]+}', $customerController->deactivate());
+        $group->get('methods/reactivate/{id:[0-9]+}', $customerController->reactivate());
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
-    $app->post('/register', $AuthController->register());
     $app->get('/docs', $docsController->index());
 
 
-    $app->get('/seed', function (Request $request, Response $response) {
-        $seeder = new SeedMovies();
-        $seed_data = $seeder->seed();
-        $db = $this->get(PDO::class);
-        $db = $this->get(PDO::class);
 
-        foreach ($seed_data as $movie) {
-            $sql = "INSERT INTO movies (uid, title, year, released, runtime, overview, genre, director, actors, country, poster, imdb_id, imdb, type) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            $stmt = $db->prepare($sql);
-            $stmt->execute([]);
-        };
-
-
-        return $response->withHeader('Content-Type', 'application/json');
-    });
 };

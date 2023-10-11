@@ -5,10 +5,11 @@ require __DIR__ . '/../../../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
 $dotenv->load();
 
+use App\Application\Controllers\Customer\CustomerController;
+use App\Application\Models\Customer;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
-use App\Application\Controllers\Payment\PaymentController;
-use App\Application\Models\Payment;
+
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
@@ -19,7 +20,7 @@ use Psr\Log\LoggerInterface;
 
 use Doctrine\ORM\EntityManager;
 
-class PaymentControllerTest extends TestCase
+class CustomerControllerTest extends TestCase
 {
     protected LoggerInterface $logger;
     protected EntityManager $doctrine;
@@ -43,7 +44,7 @@ class PaymentControllerTest extends TestCase
     public function testRead()
     {
 
-        $controller = new PaymentController($this->doctrine, $this->logger);
+        $controller = new CustomerController($this->doctrine, $this->logger);
         $request = $this->createMock(Request::class);
         $response = new Response();
 
@@ -51,16 +52,17 @@ class PaymentControllerTest extends TestCase
 
         $this->assertEquals(200, $result->getStatusCode());
     }
+ 
     public function testCreate()
     {
 
-        $controller = new PaymentController($this->doctrine, $this->logger);
+        $controller = new CustomerController($this->doctrine, $this->logger);
         $request = $this->createMock(Request::class);
         $response = new Response();
         $jsonData = [
-            'description' => 'Payment for a product',
-            'amount' => 100.50,
-            'recipiant' => 'John Doe',
+            'name' => 'test',
+            'email' => "test@email.com",
+            'balance' => 100,
         ];
 
         $jsonBody = json_encode($jsonData);
@@ -78,44 +80,67 @@ class PaymentControllerTest extends TestCase
 
         $this->assertEquals(201, $result->getStatusCode());
     }
-    
     public function testUpdate()
-        {
-            $controller = new PaymentController($this->doctrine, $this->logger);
-            $request = $this->createMock(Request::class);
-            $response = new Response();
-            $id = $this->doctrine->getRepository(Payment::class)->findOneBy([], ['createdAt' => 'DESC'])->getId();
-            $args = [$id];
-            $jsonData = [
-                'recipiant' => 'John Doe',
-            ];
+    {
+        $controller = new CustomerController($this->doctrine, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+        $id = $this->doctrine->getRepository(Customer::class)->findOneBy([], ['id' => 'DESC'])->getId();
+        $args = [$id];
+        $jsonData = [
+            'name' => 'hello',
+        ];
 
-            $jsonBody = json_encode($jsonData);
-            $streamFactory = $this->createMock(StreamFactoryInterface::class);
-            $stream = $this->createMock(StreamInterface::class);
-            $stream->expects($this->once())
-            ->method('getContents')
-            ->willReturn($jsonBody);
-    
-            $request->expects($this->once())
-            ->method('getBody')
-            ->willReturn($stream);
-    
-            $result = $controller->update()($request, $response, $args);
-            $this->assertEquals(200, $result->getStatusCode());
-        }
+        $jsonBody = json_encode($jsonData);
+        $streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->expects($this->once())
+        ->method('getContents')
+        ->willReturn($jsonBody);
 
+        $request->expects($this->once())
+        ->method('getBody')
+        ->willReturn($stream);
+
+        $result = $controller->update()($request, $response, $args);
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+    public function testDeactivate()
+    {
+
+        $controller = new CustomerController($this->doctrine, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+
+        $args = ["test@email.com"];
+        $result = $controller->deactivate()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+    public function testReactivate()
+    {
+
+        $controller = new CustomerController($this->doctrine, $this->logger);
+        $request = $this->createMock(Request::class);
+        $response = new Response();
+
+        $args = ["test@email.com"];
+        $result = $controller->reactivate()($request, $response, $args);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
 
     public function testDelete()
     {
 
-        $controller = new PaymentController($this->doctrine, $this->logger);
+        $controller = new CustomerController($this->doctrine, $this->logger);
         $request = $this->createMock(Request::class);
         $response = new Response();
-        $id = $this->doctrine->getRepository(Payment::class)->findOneBy([], ['createdAt' => 'DESC'])->getId();
-        $args = [$id];
+
+        $args = ["test@email.com"];
         $result = $controller->delete()($request, $response, $args);
 
         $this->assertEquals(200, $result->getStatusCode());
     }
+
 }

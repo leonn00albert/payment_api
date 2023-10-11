@@ -12,29 +12,59 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Throwable;
 
+/**
+ * @OA\SecurityScheme(
+ *     type="apiKey",
+ *     in="header",
+ *     securityScheme="JWT",
+ *     name="jwt_token",
+ *     description="JWT Token for authentication"
+ * )
+ */
 class AuthController
 {
-    /**
-     * @SWG\Get(
-     *   path="/v1/register",
-     *   tags={"Registration"},
-     *   summary="Register a new user",
-     *   @SWG\Response(
-     *     response=200,
-     *     description="Successful registration",
-     *     @SWG\Schema(
-     *       type="object",
-     *       @SWG\Property(property="message", type="string", example="User registered successfully"),
-     *       @SWG\Property(property="apiKey", type="string", example="your_api_key")
-     *     )
-     *   )
-     * )
-     *
-     *  * Register a new user and return API key
-     * @return callable The HTTP response with JSON data.
-     */
 
-
+ 
+/**
+ * @OA\Post(
+ *     path="/register",
+ *     summary="Register a user",
+ *     description="Registers a user and returns an API key.",
+ *     operationId="register",
+ *     tags={"User"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\MediaType(
+ *             mediaType="application/json",
+ *             @OA\Schema(
+ *                 @OA\Property(property="email", type="string", format="email", example="user@example.com")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="User registered successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="User registered successfully"),
+ *             @OA\Property(property="apiKey", type="string")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid JSON data",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="error", type="string", example="Invalid JSON data")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="error", type="string", example="Please submit a valid email.")
+ *         )
+ *     )
+ * )
+ */
     public function register(): callable
     {
         return (function (Request $req, Response $res) {
@@ -49,10 +79,7 @@ class AuthController
                 $email = filter_var($postData["email"], FILTER_VALIDATE_EMAIL) ? $postData["email"] : throw new Exception("Email is not valid");
                 $apiKey = AuthController::generateApiKey();
 
-                User::register($this->get(PDO::class), [
-                    "email" => $email,
-                    "api_key" => $apiKey
-                ]);
+
                 AuthController::addToAllowList($apiKey);
                 $res->getBody()->write(json_encode(['message' => 'User registered successfully', 'apiKey' => $apiKey]));
                 return $res->withStatus(200)->withHeader('Content-Type', 'application/json');
@@ -69,7 +96,7 @@ class AuthController
      *
      * @return string The generated API key.
      */
-    static function generateApiKey($length = 32): string
+    public static function generateApiKey($length = 32): string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $apiKey = '';
@@ -90,7 +117,7 @@ class AuthController
      *
      * @return string A message indicating whether the API key was added or already exists in the allow list.
      */
-    static function addToAllowList(string $api_key): string
+    public static function addToAllowList(string $api_key): string
     {
         $jsonFilePath = './api_keys.json';
 
@@ -141,7 +168,7 @@ class AuthController
      *
      * @return bool True if the API key is allowed, false otherwise.
      */
-    static function checkIfKeyIsAllowed(string $api_key): bool
+    public static function checkIfKeyIsAllowed(string $api_key): bool
     {
         $jsonFilePath = './api_keys.json';
 

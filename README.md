@@ -1,73 +1,80 @@
-Module 4 Project - Movie details API
 
-Develop a CRUD REST Movie details API using the Slim PHP framework. The API should adhere to RESTful principles, utilize Composer for package management, and integrate Swagger for API 
+.______      ___   ____    ____ .___  ___.  _______ .__   __. .___________.        ___      .______    __  
+|   _  \    /   \  \   \  /   / |   \/   | |   ____||  \ |  | |           |       /   \     |   _  \  |  | 
+|  |_)  |  /  ^  \  \   \/   /  |  \  /  | |  |__   |   \|  | `---|  |----`      /  ^  \    |  |_)  | |  | 
+|   ___/  /  /_\  \  \_    _/   |  |\/|  | |   __|  |  . `  |     |  |          /  /_\  \   |   ___/  |  | 
+|  |     /  _____  \   |  |     |  |  |  | |  |____ |  |\   |     |  |         /  _____  \  |  |      |  | 
+| _|    /__/     \__\  |__|     |__|  |__| |_______||__| \__|     |__|        /__/     \__\ | _|      |__| 
+
+___
+
+## Built with
+
+![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
+<br>
+![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
+<br>
+![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
 
 ## Requirements
 
-1. Memcache 
-2. MariaDB 
+1. **MariaDB**: Make sure you have MariaDB installed to run the database for this API.
 
-## Setup 
-1. Setup your env file 
+## Setup
 
-```bash
-DRIVER=
-HOST=
-DATABASE=
-USERNAME=
-PASSWORD=
-ENVIRONMENT=
-TMDB_ACCESS_TOKEN=
-MEMCACHE_HOST=
-MEMCACHE_PORT=
-```
+1. **Environment File**: Create an `.env` file in the project's root directory with the following configurations:
 
-use the seed.sql file to seed your db  
+    ```bash
+    DRIVER=
+    HOST=
+    DATABASE=
+    USERNAME=
+    PASSWORD=
+    ENVIRONMENT=
+    ```
 
+2. **Database Seeding**: Use the `seed.sql` file provided to seed your MariaDB database.
 
-## Usage 
+## Usage
 
-You can register  your email to get an API to access the v1 routes API docs a can be found at /docs
+To use this API, follow these steps:
 
-http header :
-Content-Type : application/json
-api_key : Your API KEY
+1. **Registration**: Begin by registering your account to obtain a JWT token. You can register at `/register`.
 
-```
+2. **Accessing API Documentation**: The API documentation (API Docs) is accessible at `/docs`.
 
+3. **HTTP Headers**: Use the following HTTP header for request authentication:
 
+    - **jwt_token**: Include your JWT token obtained during registration.
 
-//routes
-```bash
-GET /v1/movies - get list of all existing movies
-POST /v1/movies - add new movie to collection
-PUT /v1/movies/{id} - updates movie by {id}
-DELETE /v1/movies/{id} - deletes movie by {id}
-PATCH /v1/movies/{id} - updates particular data of movie by {id}
-GET /v1/movies/{numberPerPage} - get list of {numberPerPage} existing movies
-GET /v1/movies/{numberPerPage}/sort/{fieldToSort} - get list of {numberPerPage} existing movies sorted by {fieldToSort}
+## API Endpoints
 
+**Methods:**
 
-```
+- **GET /v1/methods**: Get a list of all payment methods.
+- **POST /v1/methods**: Add a new payment method.
+- **DELETE /v1/methods/{id}**: Delete a payment method by ID.
+- **GET /v1/methods/deactivate/{id}**: Deactivate a payment method by ID.
+- **GET /v1/methods/reactivate/{id}**: Reactivate a payment method by ID.
+- **PUT /v1/methods/{id}**: Update a payment method by ID.
 
+**Customers:**
 
-//model
-```json
-{
- "uid": "1",
- "title": "Die Hard",
- "year": "1988",
- "released": "20 Jul 1988",
- "runtime": "132 min",
- "genre": "Action, Thriller",
- "director": "John McTiernan",
- "actors": "Bruce Willis, Alan Rickman, Bonnie Bedelia",
- "country": "United States",
- "poster": "https://m.media-amazon.com/images/M/MV5BZjRlNDUxZjAtOGQ4OC00OTNlLTgxNmQtYTBmMDgwZmNmNjkxXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg",
- "imdb": "8.2",
- "type": "movie"
-}
+- **GET /v1/customers**: Get a list of all customers.
+- **POST /v1/customers**: Add a new customer.
+- **DELETE /v1/customers/{id}**: Delete a customer by ID.
+- **PUT /v1/customers/{id}**: Update a customer by ID.
+- **GET /v1/customers/deactivate/{id}**: Deactivate a customer by ID.
+- **GET /v1/customers/reactivate/{id}**: Reactivate a customer by ID.
 
-```
+**Payments (Transactions):**
 
+- **GET /v1/payments**: Get a list of all payments (transactions).
+- **POST /v1/payments**: Add a new payment (transaction).
+- **DELETE /v1/payments/{id}**: Delete a payment (transaction) by ID.
+- **PUT /v1/payments/{id}**: Update a payment (transaction) by ID.
+
+Make sure you include the required JWT token in the HTTP header for authenticated requests. Refer to the API documentation for more details on using these endpoints.
+
+Feel free to enhance this README with additional details specific to your project, such as the technologies used, dependencies, and any special considerations.
