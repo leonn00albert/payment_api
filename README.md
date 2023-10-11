@@ -1,11 +1,4 @@
-
-.______      ___   ____    ____ .___  ___.  _______ .__   __. .___________.        ___      .______    __  
-|   _  \    /   \  \   \  /   / |   \/   | |   ____||  \ |  | |           |       /   \     |   _  \  |  | 
-|  |_)  |  /  ^  \  \   \/   /  |  \  /  | |  |__   |   \|  | `---|  |----`      /  ^  \    |  |_)  | |  | 
-|   ___/  /  /_\  \  \_    _/   |  |\/|  | |   __|  |  . `  |     |  |          /  /_\  \   |   ___/  |  | 
-|  |     /  _____  \   |  |     |  |  |  | |  |____ |  |\   |     |  |         /  _____  \  |  |      |  | 
-| _|    /__/     \__\  |__|     |__|  |__| |_______||__| \__|     |__|        /__/     \__\ | _|      |__| 
-
+# Payment API
 ___
 
 ## Built with
@@ -16,7 +9,20 @@ ___
 <br>
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
+## Usage
 
+```bash
+
+// start local server
+composer start
+
+//run tests
+composer test
+
+//update database and built tables
+php bin/doctrine orm:schema-tool:update --force
+
+```
 ## Requirements
 
 1. **MariaDB**: Make sure you have MariaDB installed to run the database for this API.
