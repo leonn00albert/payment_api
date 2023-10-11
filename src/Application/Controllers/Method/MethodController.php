@@ -11,14 +11,9 @@ use App\Application\Controllers\Interfaces\ActivatableInterface;
 use App\Application\Controllers\Interfaces\CrudInterface;
 use App\Application\Exceptions\MethodNotFoundException;
 use App\Application\Models\Method;
-use App\Utils\Sanitizers\CustomerSanitizer;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Firebase\JWT\JWT;
 use OpenApi\Annotations as OA;
-use Exception;
-use PDO;
-use Psr\Log\LoggerInterface;
 
 class MethodController extends Controller implements CrudInterface, ActivatableInterface
 {

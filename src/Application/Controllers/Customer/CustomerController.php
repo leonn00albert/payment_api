@@ -17,17 +17,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Firebase\JWT\JWT;
 use OpenApi\Annotations as OA;
-use Exception;
-use PDO;
-use Psr\Log\LoggerInterface;
 
-/**
- * @OA\Info(
- *     title="Payment API",
- *     version="1.0.0",
- *     description="an api for payments"
- * )
- */
+
 
 class CustomerController extends Controller implements CrudInterface, ActivatableInterface
 {

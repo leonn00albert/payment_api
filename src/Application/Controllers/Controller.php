@@ -5,8 +5,14 @@ namespace App\Application\Controllers;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Doctrine\ORM\EntityManager;
+use OpenApi\Annotations as OA;
 
 /**
+ * @OA\Info(
+ *     title="Payment API",
+ *     version="1.0.0",
+ *     description="an api for payments"
+ * )
  * Base controller class for common controller functionality.
  */
 class Controller

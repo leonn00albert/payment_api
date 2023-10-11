@@ -6,7 +6,7 @@ namespace App\Application\Controllers\Auth;
 
 use Exception;
 use PDO;
-use App\Application\Models\User;
+use OpenApi\Annotations as OA;
 use Closure;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;

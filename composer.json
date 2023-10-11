@@ -67,6 +67,7 @@
     },
     "scripts": {
         "start": "php -S localhost:8080 -t public",
-        "test": "phpunit"
+        "test": "phpunit",
+        "db-update": "php bin/doctrine orm:schema-tool:update --force"
     }
 }
