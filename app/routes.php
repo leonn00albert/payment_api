@@ -19,7 +19,6 @@ return function (App $app) {
     $customerController = new CustomerController($app->getContainer()->get('doctrine'),$app->getContainer()->get(LoggerInterface::class));
 
     $docsController = new DocsController;
-    $AuthController = new AuthController;
 
     $app->options('/{routes:.*}', function (Request $request, Response $response) {
         return $response;
@@ -30,6 +29,7 @@ return function (App $app) {
         return $response;
     });
 
+    $app->post('/register', $customerController->create());
 
     $app->group("/v1",function ($group) use ($paymentController, $customerController) {
         $group->get('/payments', $paymentController->read());
@@ -53,7 +53,6 @@ return function (App $app) {
     });
 
     $app->get('/swagger.json', $docsController->swaggerFile());
-    $app->post('/register', $customerController->create());
     $app->get('/docs', $docsController->index());
 
 

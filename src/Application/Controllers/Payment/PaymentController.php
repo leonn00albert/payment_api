@@ -6,6 +6,7 @@ namespace App\Application\Controllers\Payment;
 
 use App\Application\Controllers\Controller;
 use App\Application\Controllers\Interfaces\CrudInterface;
+use App\Application\Exceptions\PaymentNotFoundException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Models\Payment;
@@ -18,6 +19,29 @@ use Psr\Log\LoggerInterface;
 
 class PaymentController extends Controller implements CrudInterface
 {
+    /**
+     * @OA\Get(
+     *     path="/v1/payments",
+     *     summary="Retrieve a list of payments",
+     *     tags={"Payments"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of payments",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref="#/components/schemas/Payment")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function read(): callable
     {
         return function (Request $req, Response $res): Response {
@@ -25,7 +49,7 @@ class PaymentController extends Controller implements CrudInterface
                 $payment = self::$entityManager->getRepository(Payment::class);
                 $data = $payment->findAll();
 
-                $payload = array_map(fn ($pmnt) => (array) $pmnt, $data);
+                $payload = array_map(fn (Payment $pmnt) => $pmnt->toArray(), $data);
                 return Controller::jsonResponse($res, $payload);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/payments");
@@ -33,6 +57,41 @@ class PaymentController extends Controller implements CrudInterface
             }
         };
     }
+    /**
+     * @OA\Post(
+     *     path="/v1/payments",
+     *     summary="Create a new payment",
+     *     tags={"Payments"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Payment")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Payment added successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function create(): callable
     {
         return function (Request $req, Response $res): Response {
@@ -45,6 +104,56 @@ class PaymentController extends Controller implements CrudInterface
             }
         };
     }
+    /**
+     * @OA\Put(
+     *     path="/v1/payments/{paymentId}",
+     *     summary="Update a payment",
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         name="paymentId",
+     *         in="path",
+     *         description="ID of the payment to update",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/Payment")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment updated successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function update(): callable
     {
         return function (Request $req, Response $res, array $args): Response {
@@ -61,7 +170,7 @@ class PaymentController extends Controller implements CrudInterface
                 $payment = self::$entityManager->getRepository(Payment::class)->find($paymentId);
 
                 if (!$payment) {
-                    return Controller::jsonResponse($res, ['error' => 'Payment not found'], 404);
+                    throw new PaymentNotFoundException();
                 }
 
                 $validatedData = PaymentSanitizer::sanitize($postData, true);
@@ -83,6 +192,8 @@ class PaymentController extends Controller implements CrudInterface
                 self::$entityManager->flush();
 
                 return Controller::jsonResponse($res, ['message' => 'Payment updated successfully'], 200);
+            } catch (PaymentNotFoundException $e) {
+                return  Controller::jsonResponse($res, ['error' => $e->getMessage()], $e->getCode());
             } catch (\Throwable $e) {
                 Controller::logError($e, "PUT /v1/payments");
                 return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500)
@@ -91,7 +202,44 @@ class PaymentController extends Controller implements CrudInterface
         };
     }
 
-
+    /**
+     * @OA\Delete(
+     *     path="/v1/payments/{paymentId}",
+     *     summary="Delete a payment",
+     *     tags={"Payments"},
+     *     @OA\Parameter(
+     *         name="paymentId",
+     *         in="path",
+     *         description="ID of the payment to delete",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment deleted successfully",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
+     */
     public function delete(): callable
     {
         return function (Request $req, Response $res, array $args): Response {
@@ -104,9 +252,11 @@ class PaymentController extends Controller implements CrudInterface
                     PaymentController::$entityManager->flush();
                     $response = ['body' => ['message' => 'Payment deleted successfully.'], 'statusCode' => 200];
                 } else {
-                    $response = ['body' => ['error' => 'Payment not found'], 'statusCode' => 404];
+                    throw new PaymentNotFoundException();
                 }
                 return Controller::jsonResponse($res, $response['body'], $response['statusCode']);
+            } catch (PaymentNotFoundException $e) {
+                return  Controller::jsonResponse($res, ['error' => $e->getMessage()], $e->getCode());
             } catch (\Throwable $e) {
                 Controller::logError($e, "DELETE /v1/payments/" . $args[0]);
                 return Controller::jsonResponse($res, ['error' => $e->getMessage()], 500);

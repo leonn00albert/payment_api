@@ -12,29 +12,59 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Throwable;
 
+/**
+ * @OA\SecurityScheme(
+ *     type="apiKey",
+ *     in="header",
+ *     securityScheme="JWT",
+ *     name="jwt_token",
+ *     description="JWT Token for authentication"
+ * )
+ */
 class AuthController
 {
-    /**
-     * @SWG\Get(
-     *   path="/v1/register",
-     *   tags={"Registration"},
-     *   summary="Register a new user",
-     *   @SWG\Response(
-     *     response=200,
-     *     description="Successful registration",
-     *     @SWG\Schema(
-     *       type="object",
-     *       @SWG\Property(property="message", type="string", example="User registered successfully"),
-     *       @SWG\Property(property="apiKey", type="string", example="your_api_key")
-     *     )
-     *   )
-     * )
-     *
-     *  * Register a new user and return API key
-     * @return callable The HTTP response with JSON data.
-     */
 
-
+ 
+/**
+ * @OA\Post(
+ *     path="/register",
+ *     summary="Register a user",
+ *     description="Registers a user and returns an API key.",
+ *     operationId="register",
+ *     tags={"User"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\MediaType(
+ *             mediaType="application/json",
+ *             @OA\Schema(
+ *                 @OA\Property(property="email", type="string", format="email", example="user@example.com")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="User registered successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="User registered successfully"),
+ *             @OA\Property(property="apiKey", type="string")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid JSON data",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="error", type="string", example="Invalid JSON data")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="error", type="string", example="Please submit a valid email.")
+ *         )
+ *     )
+ * )
+ */
     public function register(): callable
     {
         return (function (Request $req, Response $res) {

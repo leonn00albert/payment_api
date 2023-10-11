@@ -2,9 +2,20 @@
 
 namespace App\Application\Models;
 
+use OpenApi\Annotations as OA;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @OA\Schema(
+ *     schema="Customer",
+ *     required={"name", "email", "balance"},
+ *     @OA\Property(property="id", type="integer", format="int64", description="Customer ID"),
+ *     @OA\Property(property="name", type="string", description="Customer name"),
+ *     @OA\Property(property="email", type="string", format="email", description="Customer email"),
+ *     @OA\Property(property="balance", type="number", format="float", description="Customer balance"),
+ *     @OA\Property(property="active", type="boolean", description="Customer active status"),
+ *     @OA\Property(property="jwt", type="string", description="Customer JWT token"),
+ * )
  * @ORM\Entity
  * @ORM\Table(name="customers")
  */
@@ -174,5 +185,21 @@ class Customer
     {
         $this->jwt = $jwt;
         return $this;
+    }
+    /**
+     * Converts the class to an array.
+     *
+     * @return array An associative array representing the class properties.
+     */
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->id,
+            "email" => $this->email,
+            "balance" => $this->balance,
+            "name" => $this->name,
+            "active" => $this->active,
+
+        ];
     }
 }

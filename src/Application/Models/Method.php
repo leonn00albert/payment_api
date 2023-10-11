@@ -2,9 +2,18 @@
 
 namespace App\Application\Models;
 
+use OpenApi\Annotations as OA;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @OA\Schema(
+ *     schema="Method",
+ *     required={"id", "name", "description", "active"},
+ *     @OA\Property(property="id", type="integer", format="int64", description="Method ID"),
+ *     @OA\Property(property="name", type="string", description="Method name"),
+ *     @OA\Property(property="description", type="string", description="Method description"),
+ *     @OA\Property(property="active", type="boolean", description="Method activity status"),
+ * )
  * @ORM\Entity
  * @ORM\Table(name="payment_methods")
  */
@@ -117,5 +126,20 @@ class Method
     {
         $this->active = $active;
         return $this;
+    }
+
+       /**
+     * Converts the class to an array.
+     *
+     * @return array An associative array representing the class properties.
+     */
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->id,
+            "description" => $this->description,
+            "active" => $this->active,
+            "name" => $this->name,
+        ];
     }
 }
