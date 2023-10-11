@@ -20,7 +20,7 @@ composer start
 composer test
 
 //update database and built tables
-php composer-db-update
+composer db-update
 
 ```
 ## Requirements
