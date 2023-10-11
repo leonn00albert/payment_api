@@ -20,7 +20,7 @@ composer start
 composer test
 
 //update database and built tables
-php bin/doctrine orm:schema-tool:update --force
+php composer-db-update
 
 ```
 ## Requirements

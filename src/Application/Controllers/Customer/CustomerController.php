@@ -22,7 +22,6 @@ use OpenApi\Annotations as OA;
 
 class CustomerController extends Controller implements CrudInterface, ActivatableInterface
 {
-
     /**
      * @OA\Get(
      *     path="/v1/customers",
@@ -52,9 +51,9 @@ class CustomerController extends Controller implements CrudInterface, Activatabl
             try {
                 $customerRepository = self::$entityManager->getRepository(Customer::class);
                 $customers = $customerRepository->findAll();
-                
+
                 $customerData = array_map(fn (Customer $customer) => $customer->toArray(), $customers);
-    
+
                 return Controller::jsonResponse($res, $customerData);
             } catch (\Throwable $e) {
                 Controller::logError($e, "GET /v1/customers");

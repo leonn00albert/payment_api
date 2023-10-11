@@ -23,8 +23,6 @@ use Throwable;
  */
 class AuthController
 {
-
- 
 /**
  * @OA\Post(
  *     path="/register",

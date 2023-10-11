@@ -17,7 +17,6 @@ use OpenApi\Annotations as OA;
 
 class MethodController extends Controller implements CrudInterface, ActivatableInterface
 {
-
     /**
      * @OA\Get(
      *     path="/v1/methods",

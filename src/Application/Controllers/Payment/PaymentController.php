@@ -14,8 +14,6 @@ use App\Utils\Sanitizers\PaymentSanitizer;
 use DateTime;
 use OpenApi\Annotations as OA;
 
-
-
 class PaymentController extends Controller implements CrudInterface
 {
     /**
