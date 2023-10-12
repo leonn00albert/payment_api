@@ -82,5 +82,3 @@ To use this API, follow these steps:
 - **PUT /v1/payments/{id}**: Update a payment (transaction) by ID.
 
 Make sure you include the required JWT token in the HTTP header for authenticated requests. Refer to the API documentation for more details on using these endpoints.
-
-Feel free to enhance this README with additional details specific to your project, such as the technologies used, dependencies, and any special considerations.
