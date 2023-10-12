@@ -18,8 +18,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Firebase\JWT\JWT;
 use OpenApi\Annotations as OA;
 
-
-
 class CustomerController extends Controller implements CrudInterface, ActivatableInterface
 {
     /**
