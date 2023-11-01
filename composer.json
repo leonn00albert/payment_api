@@ -29,7 +29,7 @@
         "doctrine/orm": "^2.16",
         "firebase/php-jwt": "^6.9",
         "guzzlehttp/guzzle": "^7.8",
-        "illuminate/database": "^10.21",
+        "illuminate/database": "^10.30",
         "illuminate/events": "^10.21",
         "monolog/monolog": "^2.9",
         "php-di/php-di": "^6.4",
