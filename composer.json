@@ -27,7 +27,7 @@
         "doctrine/annotations": "^2.0",
         "doctrine/dbal": "^3.2",
         "doctrine/orm": "^2.16",
-        "firebase/php-jwt": "^6.9",
+        "firebase/php-jwt": "^6.10",
         "guzzlehttp/guzzle": "^7.8",
         "illuminate/database": "^10.21",
         "illuminate/events": "^10.21",
